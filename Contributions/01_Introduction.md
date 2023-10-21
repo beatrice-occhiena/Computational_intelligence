@@ -21,22 +21,22 @@ Computational Intelligence is a multidisciplinary field at the intersection of c
 Computational intelligence draws inspiration from natural and biological processes. It mimics the problem-solving approaches observed in nature. It involves developing AI systems that can `adapt to changing environments` and `learn from experience` to `solve complex problems`.
 - **Evolutionary Computation** These techniques simulate the principles of natural selection, genetic recombination, and mutation to evolve and improve solutions over successive generations.
   - `Learning` is often a part of the evolutionary process. As populations of potential solutions evolve, individuals that perform better are more likely to be selected to produce offspring. Learning mechanisms, such as *adaptation and improvement*, occur at the level of individual solutions within the population. But over time, the population as a whole becomes better at solving the given problem as the fittest solutions are retained and used as parents for the next generation.
-- **Swarm Intelligence** These techniques simulate the collective behavior of social insects and animals to solve complex problems. They involve the coordination of multiple agents to achieve a common goal.
+- **Swarm Intelligence** These techniques simulate the collective behavior of social insects and animals to solve complex problems. They involve the coordination of multiple agents to achieve a common goal. 
 
-  ![Alt text](../Images/image-2.png)
+  🌿🐜... 🐜...... 🐜...
 
 
 ### Complexity Beyond Mathematical Reasoning
 Many real-world problems are inherently complex and cannot be effectively solved through traditional mathematical modeling alone.
 - **Fuzzy logic** It involves representing and reasoning with `imprecise and uncertain information`. It is useful for modeling `human reasoning` and `linguistic concepts` that are not easily quantifiable.
 
-  ![Alt text](../Images/image.png)
+  ![Alt text](../Images/C01_01.png)
 
 ### Multi-agent Systems
 Multi-agent systems involve multiple agents that interact with each other to achieve a common goal. They are useful for modeling complex systems that involve multiple entities and interactions between them.
 - **Artificial immune systems** These techniques simulate the behavior of the human immune system to solve complex problems. They involve the use of `pattern recognition` and `learning` to detect and eliminate foreign bodies or pathogens.
 
-  ![Alt text](../Images/image-3.png)
+  --->)🦠(<---
 
 ## AI Approaches
 When developing an AI approach, it's crucial to ask two fundamental questions that shape how we approach AI research and development. We must consider whether the approach aligns with our objectives and if it's *ethical* and *accountable to society*. By prioritizing these questions, we can create a clear and effective strategy while ensuring ethical responsibility. 
