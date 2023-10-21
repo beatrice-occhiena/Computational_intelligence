@@ -53,6 +53,11 @@ For this reason, we can divide AI into four categories based on these two questi
 3. **Acting Humanly** In this approach, the objective is to develop AI systems that can `imitate human behavior` and actions. The focus is on attaining human-like performance in tasks and activities. This typically requires *natural language comprehension*, *speech detection*, and *computer vision* to enable AI systems to communicate with humans in a human-like manner.
 4. **Acting Rationally** The acting rationally approach emphasizes creating AI systems capable of `executing specific tasks optimally`. This approach prioritizes determining the *best course of action* to attain the intended results rather than simulating human thought or behavior, often involving *decision-making algorithms* and *optimization techniques*.
 
+  
+    🧠...✋🏻
+    
+    🙆🏻‍♂️...✨
+
 ### Different scopes
 - **Narrow/weak AI** It involves developing AI systems that can perform specific tasks and activities. It focuses on creating AI systems that can `accomplish a single task` or `solve a specific problem`.
 - **General/strong AI** It involves developing AI systems that can perform any task or activity a human can. It focuses on creating AI systems that can `generalize across tasks and domains` and perform any activity a human can. So far, this type of AI has not been achieved and is still a theoretical concept.
