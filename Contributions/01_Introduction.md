@@ -9,7 +9,12 @@
 - https://en.wikipedia.org/wiki/Computational_intelligence
 - https://medium.com/it-paragon/fuzzy-logic-approximating-imprecise-statement-54d444237820
 
-## Computational Intelligence
+.
+
+.
+
+
+# Computational Intelligence
 Computational Intelligence is a multidisciplinary field at the intersection of computer science, biology, and engineering. It explores the `development of intelligent systems` capable of solving complex problems and adapting to dynamic environments.
 
 ### Nature-Inspired Methodologies
