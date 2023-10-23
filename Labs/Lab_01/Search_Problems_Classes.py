@@ -25,6 +25,10 @@ class Node:
         self.path_cost = path_cost
         self.depth = 0 if parent is None else parent.depth + 1
         self.is_visited = False
+    
+    def __lt__(self, other):
+        """Return `True` if the path cost of the Node is less than the path cost of the other Node."""
+        return self.path_cost < other.path_cost
       
 
 class SearchProblem:
@@ -326,7 +330,6 @@ class SearchStrategy:
             self.max_frontier_size = max(self.max_frontier_size, frontier.qsize())
             for child in problem.expand(node):
                 if search_type == 'tree_search' or not child.is_visited:
-                    print(problem.h(child) + child.path_cost)
                     frontier.put((problem.h(child) + child.path_cost, child))
                     child.is_visited = True
         return None
