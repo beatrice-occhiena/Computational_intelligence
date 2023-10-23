@@ -75,3 +75,9 @@ The selection of an agent-program design relies on the environment in which the 
 - A `self-driving car` agent 🌳..🚶🏻🚦...🚗 -> operates in a complex, ever-changing environment.
 
  > An exhaustive and accurate task environment specification is crucial for the design of an effective agent. It's important to consider all the relevant aspects of the environment, and to avoid including irrelevant aspects (abstraction).
+
+ ### Environment Representation
+ The way the agent represents and interacts with the environment plays a critical role in its decision-making processes.
+  - **Atomic** The environment is atomic if the agent can `perceive and act on it as a single entity`. The agent doesn't need to consider its internal structure and can treat it as a black box. Such environments are typically simple and predictable => high level of abstraction. 📦..
+  - **Factored** A factored representation goes a step further by breaking down the states into a `vector of attribute values`. More detailed and structured understanding of the environment => more sophisticated decision-making and reasoning. 📊..
+  - **Structured** In this representation, states include `objects`, each of which may have `attributes` of their own, as well as `relationships` with other objects. Structured representations are especially valuable in environments with intricate interactions and dependencies. Most expressive and detailed understanding of the environment => most sophisticated yet complex reasoning. 📚..
