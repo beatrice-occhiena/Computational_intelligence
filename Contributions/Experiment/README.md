@@ -20,7 +20,7 @@ In this mini-project we will develop a Python program to visualize and experimen
 ## The Problem
 We will consider the problem of optimizing a function of two variables, `f(x,y)`, where `x` and `y` are real numbers. The chosen function is the **Himmelblau's function**, which is a well-known test function for optimization algorithms.
 
-![himmelblau](himmelblau.png)
+![himmelblau's](himmelblaus.png)
 
 ## The Population
 An individual in the population is a pair of real numbers, `x` and `y`. The fitness of an individual is the value of the function `f(x,y)`.
