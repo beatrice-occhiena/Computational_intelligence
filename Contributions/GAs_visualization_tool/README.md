@@ -15,7 +15,7 @@
 .
 
 # Visualization Tool for Population-based Methods
-In this mini-project we will develop a Python program to visualize and experiment with evolutionary algorithms, in the context of optimizing complex functions with known landscapes. This will hopefully serve as a useful tool for understanding the behavior of evolutionary algorithms, and for experimenting with different parameters and operators.
+In this mini-project I've tried to develop a Python program to visualize and experiment with evolutionary algorithms, in the context of optimizing complex functions with known landscapes. This will hopefully serve as a useful tool for understanding the behavior of evolutionary algorithms, and for experimenting with different parameters and operators.
 
 ## The Problem
 We will consider the problem of optimizing a function of two variables, `f(x,y)`, where `x` and `y` are real numbers. The chosen function is the **Himmelblau's function**, which is a well-known test function for optimization algorithms.
@@ -58,4 +58,9 @@ This is the final result of a simulation with the following parameters:
 
 ![pop_evolution.gif](pop_evolution.gif)
 
+## Further Developments
+- [ ] Add more genetic operators
+- [ ] Implement self-adaptive techniques
+- [ ] Add more fitness functions
+- [ ] Find a way to differentiate between genotypes and phenotypes
 
