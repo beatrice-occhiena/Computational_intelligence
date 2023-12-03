@@ -23,9 +23,17 @@ class AbstractProblem:
         return sum(bool(g) for g in genome)
 
     def __call__(self, genome):
+
+        # 1. Update the number of calls to the fitness function.
         self._calls += 1
+
+        # 2. Calculate fitness values for different sub-genomes of the input genome and then sorts them in descending order.
+            # The number of sub-genomes depends on the value of x (i.e., the instance of the problem).
         fitnesses = sorted((AbstractProblem.onemax(genome[s :: self.x]) for s in range(self.x)), reverse=True)
-        print(f"Fitnesses: {fitnesses}")
+        
+        # 3. Calculate the fitness value of the input genome.
+            # This is done aggregating fitness values from different sub-genomes of the input genome, 
+            # giving more weight to sub-genomes with higher fitness values
         val = sum(f for f in fitnesses if f == fitnesses[0]) - sum(
             f * (0.1 ** (k + 1)) for k, f in enumerate(f for f in fitnesses if f < fitnesses[0])
         )
