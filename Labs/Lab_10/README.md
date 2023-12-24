@@ -14,6 +14,17 @@
 .
 # Lab 10: Tic-Tac-Toe with Reinforcement Learning
 
+My starting point was the original code from the official course repository.
+
+### Magic Square Trick
+
+A magic square, in the context of this game, is a specific arrangement of numbers that plays a crucial role in simplifying the win condition check. In a standard 3x3 magic square, each cell contains a unique number from 1 to 9, and the sum of the numbers in any row, column, or diagonal is always the same.
+
+`MAGIC = [2, 7, 6, 9, 5, 1, 4, 3, 8]`
+
+- **Efficient win check**: In Tic-Tac-Toe, a player wins if they can line up three of their marks (either X or O) in a row, column, or diagonal. By using a magic square, if the sum of the magic square numbers corresponding to a player's marks is `15`, then that player has achieved a winning combination
+
+
 ### Integrating Symmetry Recognition
 
 The game of Tic-Tac-Toe has a number of both **rotational and reflective symmetries** that can be exploited to reduce the number of states that need to be learned. In fact, a borad rotated or mirrored represents the `same strategic situation`. 
