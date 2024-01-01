@@ -209,3 +209,25 @@ class Game(object):
                 # move the piece down
                 self._board[(self._board.shape[0] - 1, from_pos[1])] = piece
         return acceptable
+
+class MyGame(Game):
+    def __init__(self) -> None:
+        super().__init__()
+    
+    def print(self):
+        """
+        Prints the board in a more readable way
+        - ⬜ are neutral pieces
+        - ❌ are pieces of player 0
+        - 🔘 are pieces of player 1
+        """
+        for row in self._board:
+            for cell in row:
+                if cell == -1:
+                    print("⬜", end=" ")
+                elif cell == 0:
+                    print("❌", end=" ")
+                elif cell == 1:
+                    print("🔘", end=" ")
+            print()
+        print()

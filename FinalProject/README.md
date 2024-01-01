@@ -13,3 +13,8 @@
 
 .
 
+# Final Project: Quixo Player
+
+## Introduction
+The aim of this project is to develop a player for the game Quixo, a board game invented by Thierry Chapeau and published by Gigamic in 1991. 
+
