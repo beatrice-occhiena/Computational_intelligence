@@ -23,6 +23,7 @@ Quixo is played on a 5x5 board. Each square of the board initially contains a ne
 - Player 0: ❌
 - Player 1: 🔘
 
+#### Rules
 Players take turns to play. A turn consists of two actions: 
 1. Taking a piece from the board.
 2. Then sliding it back onto the board.
@@ -30,16 +31,20 @@ Players take turns to play. A turn consists of two actions:
 A piece can only be taken from the edge of the board if it is either neutral or already belongs to that player. Once a piece is taken, the player marks it as their own.
 - ⬜⬜⬜⬜⬇️⬜⬜
 - ⬜🟥🟥🟥🟥🟥⬜
-- ⬜🟥⬜⬜⬜🟥⬜
-- ⬜🟥⬜⬜⬜🟥⬜
-- ⬜🟥⬜⬜⬜🟥⬜
-- ➡️🟥🟥🟥🟨🟥⬅️
-- ⬜⬜⬜⬜⬆️⬜⬜
+- ⬜🟥🟨🟨🟨🟥⬜
+- ⬜🟥🟨🟨🟨🟥⬜
+- ⬜🟥🟨🟨🟨🟥⬜
+- ➡️🟥🟥🟥🟦🟥⬅️
+- ⬜⬜⬜⬜⬜⬜⬜
 
 
 The player then slides the piece back onto the board from a different edge, pushing the other pieces to make room.
-- 🟥🟥🟥🟥🟥
-- 🟥⬜⬜⬜🟥
-- 🟥⬜⬜🟥🟥
-- 🟥⬜⬜⬜🟥
-- 🟥🟥🟥🟨🟥
+> The direction in which a piece can be slid back onto the board depends on its position. Pieces not in a corner can be moved in directions parallel to the edge they were taken from. Corner pieces have more restricted movement options.
+
+#### Winning condition
+A player wins by forming a continuous line of five of their pieces, either horizontally, vertically, or diagonally. The game checks for a winner after each turn. If a player has formed such a line, they are declared the winner.
+
+The game continues with players alternating turns until one player wins or the board is in a state where no further moves can lead to a win (though this condition is not explicitly checked in the original `class Game` code).
+
+
+
