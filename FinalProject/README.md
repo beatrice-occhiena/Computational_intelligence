@@ -16,5 +16,30 @@
 # Final Project: Quixo Player
 
 ## Introduction
-The aim of this project is to develop a player for the game Quixo, a board game invented by Thierry Chapeau and published by Gigamic in 1991. 
+The aim of this project is to develop a player for the game Quixo, a board game invented by Thierry Chapeau and published by Gigamic in 1991.
 
+### Game description
+Quixo is played on a 5x5 board. Each square of the board initially contains a neutral piece, represented by -1 in the code. The game is played by two players:
+- Player 0: ❌
+- Player 1: 🔘
+
+Players take turns to play. A turn consists of two actions: 
+1. Taking a piece from the board.
+2. Then sliding it back onto the board.
+
+A piece can only be taken from the edge of the board if it is either neutral or already belongs to that player. Once a piece is taken, the player marks it as their own.
+- ⬜⬜⬜⬜⬇️⬜⬜
+- ⬜🟥🟥🟥🟥🟥⬜
+- ⬜🟥⬜⬜⬜🟥⬜
+- ⬜🟥⬜⬜⬜🟥⬜
+- ⬜🟥⬜⬜⬜🟥⬜
+- ➡️🟥🟥🟥🟨🟥⬅️
+- ⬜⬜⬜⬜⬆️⬜⬜
+
+
+The player then slides the piece back onto the board from a different edge, pushing the other pieces to make room.
+- 🟥🟥🟥🟥🟥
+- 🟥⬜⬜⬜🟥
+- 🟥⬜⬜🟥🟥
+- 🟥⬜⬜⬜🟥
+- 🟥🟥🟥🟨🟥
