@@ -288,3 +288,170 @@ class Quixo(Game):
 
         # 3. Return the list of possible actions
         return possible_actions
+
+
+
+
+import numpy as np
+
+class SymmetryGenerator:
+
+    ############################
+    # SYMMETRIES FOR THE BOARD #
+    ############################
+
+    def __init__(self):
+        self.transforms = [
+            ("identity", self.identity),
+            ("rotate_90", self.rotate_90),
+            ("rotate_180", self.rotate_180),
+            ("rotate_270", self.rotate_270),
+            ("reflect_horizontal", self.reflect_horizontal),
+            ("reflect_vertical", self.reflect_vertical),
+            ("reflect_diagonal", self.reflect_diagonal),
+            ("reflect_antidiagonal", self.reflect_antidiagonal)
+        ]
+
+    def identity(self, board):
+        return board
+
+    def rotate_90(self, board):
+        return np.rot90(board)
+
+    def rotate_180(self, board):
+        return np.rot90(board, k=2)
+
+    def rotate_270(self, board):
+        return np.rot90(board, k=3)
+
+    def reflect_horizontal(self, board):
+        return np.fliplr(board)
+
+    def reflect_vertical(self, board):
+        return np.flipud(board)
+
+    def reflect_diagonal(self, board):
+        return np.transpose(board)
+
+    def reflect_antidiagonal(self, board):
+        return np.flip(np.transpose(board), axis=1)
+
+    def get_symmetries(self, board):
+        symmetries = [(label, transform(board)) for label, transform in self.transforms]
+        return symmetries
+    
+    ##########################
+    # SYMMETRIES FOR ACTIONS #
+    ##########################
+
+    def get_base_action(self, from_pos: tuple[int, int], slide: Move, symmetry_to_apply: str):
+
+        # 1. Get the transformation to apply
+        transf = getattr(self, symmetry_to_apply)
+
+        # 2. Apply the symmetry to the from_pos
+        from_pos = transf(from_pos)
+
+        # 3. Apply the symmetry to the slide
+        slide = transf(slide)
+
+        # 4. Return the transformed action
+        return from_pos, slide
+    
+    def get_original_action(self, from_pos: tuple[int, int], slide: Move, symmetry_to_reverse: str):
+        
+
+
+
+    # COORDINATES SYMMETRIES
+
+    def identity(self, from_pos: tuple[int, int]):
+        # Return the position (y, x) unchanged
+        return from_pos
+    
+    def rotate_90(self, from_pos: tuple[int, int]):
+        # Rotate a position (y, x) by 90 degrees on a 5x5 board
+        return 4-from_pos[1], from_pos[0]
+    
+    def rotate_180(self, from_pos: tuple[int, int]):
+        # Rotate a position (y, x) by 180 degrees on a 5x5 board
+        return 4-from_pos[0], 4-from_pos[1]
+    
+    def rotate_270(self, from_pos: tuple[int, int]):
+        # Rotate a position (y, x) by 270 degrees on a 5x5 board
+        return from_pos[1], 4-from_pos[0]
+    
+    def reflect_horizontal(self, from_pos: tuple[int, int]):
+        # Reflect a position (y, x) horizontally on a 5x5 board
+        return from_pos[0], 4-from_pos[1]
+
+    def reflect_vertical(self, from_pos: tuple[int, int]):
+        # Reflect a position (y, x) vertically on a 5x5 board
+        return 4-from_pos[0], from_pos[1]
+    
+    def reflect_diagonal(self, from_pos: tuple[int, int]):
+        # Reflect a position (y, x) along the diagonal on a 5x5 board
+        return from_pos[1], from_pos[0]
+
+    def reflect_antidiagonal(self, from_pos: tuple[int, int]):
+        # Reflect a position (y, x) along the antidiagonal on a 5x5 board
+        return 4-from_pos[1], 4-from_pos[0]
+    
+    # SLIDE MOVE SYMMETRIES
+    def identity(self, slide: Move):
+        # Return the slide unchanged
+        return slide
+    
+    def rotate_90(self, slide: Move):
+        # Rotate a slide by 90 degrees
+        if slide == Move.TOP: return Move.RIGHT
+        elif slide == Move.BOTTOM: return Move.LEFT
+        elif slide == Move.LEFT: return Move.TOP
+        elif slide == Move.RIGHT: return Move.BOTTOM
+
+    def rotate_180(self, slide: Move):
+        # Rotate a slide by 180 degrees
+        if slide == Move.TOP: return Move.BOTTOM
+        elif slide == Move.BOTTOM: return Move.TOP
+        elif slide == Move.LEFT: return Move.RIGHT
+        elif slide == Move.RIGHT: return Move.LEFT
+
+    def rotate_270(self, slide: Move):
+        # Rotate a slide by 270 degrees
+        if slide == Move.TOP: return Move.LEFT
+        elif slide == Move.BOTTOM: return Move.RIGHT
+        elif slide == Move.LEFT: return Move.BOTTOM
+        elif slide == Move.RIGHT: return Move.TOP
+
+    def reflect_horizontal(self, slide: Move):
+        # Reflect a slide horizontally
+        if slide == Move.TOP: return Move.TOP
+        elif slide == Move.BOTTOM: return Move.BOTTOM
+        elif slide == Move.LEFT: return Move.RIGHT
+        elif slide == Move.RIGHT: return Move.LEFT
+
+    def reflect_vertical(self, slide: Move):
+        # Reflect a slide vertically
+        if slide == Move.TOP: return Move.BOTTOM
+        elif slide == Move.BOTTOM: return Move.TOP
+        elif slide == Move.LEFT: return Move.LEFT
+        elif slide == Move.RIGHT: return Move.RIGHT
+
+    def reflect_diagonal(self, slide: Move):
+        # Reflect a slide along the diagonal
+        if slide == Move.TOP: return Move.LEFT
+        elif slide == Move.BOTTOM: return Move.RIGHT
+        elif slide == Move.LEFT: return Move.TOP
+        elif slide == Move.RIGHT: return Move.BOTTOM
+
+    def reflect_antidiagonal(self, slide: Move):
+        # Reflect a slide along the antidiagonal
+        if slide == Move.TOP: return Move.RIGHT
+        elif slide == Move.BOTTOM: return Move.LEFT
+        elif slide == Move.LEFT: return Move.BOTTOM
+        elif slide == Move.RIGHT: return Move.TOP
+    
+
+        
+
+

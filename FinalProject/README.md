@@ -77,7 +77,7 @@ Given a state, we can therefore generate a maximum of 8 `equivalent states` by a
 
 #### State-space structure
 
-In choosing a strategy, it is fundamental to consider that  the state-space cannot be perfectly represented as a tree due to the nature of its gameplay. Particularly towards the end of the game, when the board is nearly full, most moves don't add new pieces. Instead, they just move the pieces that are already there. This creates **cycles** in the game, where we might see the same arrangement of pieces more than once.
+In choosing a strategy, it is fundamental to consider that  the state-space cannot be perfectly represented as a tree due to the nature of the gameplay. Particularly towards the end of the game, when the board is nearly full, most moves don't add new pieces. Instead, they just move the pieces that are already there. This creates **cycles** in the game, where we might see the same arrangement of pieces more than once.
 
 > Because of this looping, we have to think of the game more like a **graph**, where these repeated patterns can happen.
 
@@ -86,3 +86,11 @@ In choosing a strategy, it is fundamental to consider that  the state-space cann
 2. **Memory Management** - In AI implementations, especially those using search strategies, it's crucial to remember which states have been visited to prevent redundant evaluations and infinite loops. This requires more sophisticated memory management than a simple tree traversal.
 
 ## Implementation
+
+### Quixo extended class
+We've created 
+
+#### Symmetry Management
+As mentioned in the previous section, the board has 8 symmetries. This means that, given a state, we can generate up to 8 equivalent states.
+
+Approximating Q function with a Neural Network???
