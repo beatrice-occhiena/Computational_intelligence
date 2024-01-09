@@ -4,20 +4,30 @@
     #TODO: Add a description of the file
 """
 
-from game import Game, Move
+from game import Game, Move, Player
 
 
 class Quixo(Game):
     def __init__(self) -> None:
         super().__init__()
     
-    def print(self):
+    def print(self, win: bool = False):
         """
-        Prints the board in a more readable way
+        Prints the current player and the board in a more readable way
         - ⬜ are neutral pieces
         - ❌ are pieces of player 0
         - 🔘 are pieces of player 1
         """
+
+        # 1. Print the current player or the winner
+        symbol = "❌" if self.current_player_idx == 0 else "🔘"
+        if win:
+            print(f"Player {symbol} wins the game!")
+        else:
+            print(f"Current player: {symbol}")  
+        
+        # 2. Print the board
+        print("*****************")
         for row in self._board:
             for cell in row:
                 if cell == -1:
@@ -85,3 +95,63 @@ class Quixo(Game):
 
         # 3. Return the list of possible actions
         return possible_actions
+    
+    def make_move(self, from_pos: tuple[int, int], slide: Move) -> bool:
+        """Makes a move on the board."""
+        return super()._Game__move(from_pos, slide, self.current_player_idx)
+    
+    def check_winner(self) -> int:
+        """ Checks if there is a winner."""
+        return super().check_winner()
+
+    def change_player(self):
+        """Changes the current player."""
+        self.current_player_idx = 1 - self.current_player_idx
+
+    def play(self, player1: Player, player2: Player, verbose: bool=False, debug: bool=False) -> int:
+        '''Play the game. Returns the winning player'''
+
+        # 1. Initialize the players
+        players = [player1, player2]
+            
+        # 2. Play the game
+        winner = -1
+        while winner < 0:
+            self.change_player()
+
+            # 2.1. Print the board if verbose
+            if verbose:
+                self.print()
+            
+            # 2.2. DEBUG: Print the possible actions
+            if debug:
+                possible_actions = self.get_possible_actions()
+                print("Number of possible actions:", len(possible_actions))
+                print("Possible actions: ", possible_actions)
+                
+            # 2.3. Make the move of the current player
+            ok = False
+            while not ok:
+                
+                # 2.2.1. Get the move from the current player
+                from_pos, slide = players[self.current_player_idx].make_move(self)
+                
+                # 2.2.2. Make the move and check if it was successful
+                ok = self.make_move(from_pos, slide)
+
+                # 2.2.3. VERBOSE: Print the move's outcome
+                if verbose:
+                    if ok:
+                      print(f"Player {self.current_player_idx} moved ({from_pos}, {slide})")
+                    else:
+                      print(f"Player {self.current_player_idx} tried to move ({from_pos}, {slide}) but failed")
+            
+            # 2.4. Check if there is a winner
+            winner = self.check_winner()
+
+        # 3. VERBOSE: Print the final board and the winner
+        if verbose:
+            self.print(win=True)
+        
+        # 4. Return the winner
+        return winner

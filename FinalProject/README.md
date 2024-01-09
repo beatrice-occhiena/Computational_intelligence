@@ -90,7 +90,10 @@ In choosing a strategy, it is fundamental to consider that  the state-space cann
 ### Quixo extended class
 We've created 
 
-#### Symmetry Management
+### Symmetry Management
 As mentioned in the previous section, the board has 8 symmetries. This means that, given a state, we can generate up to 8 equivalent states.
+
+In the file [`symmetry.py`](symmetry.py) we've implemented ...
+
 
 Approximating Q function with a Neural Network???
