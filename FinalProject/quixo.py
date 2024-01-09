@@ -40,21 +40,6 @@ class Quixo(Game):
             print()
         print()
 
-    def get_base_state(self) -> tuple[str, str]:
-        """ 
-        Returns:
-        1. the `label` of the transformation applied to the board
-        2. the hashable equivalent of the board `base state`
-        """
-
-        # 1. Generate the base state of the current board
-        SG = SymmetryGenerator()
-        transf_label, board_base_state = SG.get_base_state(self._board)
-
-        # 2. Return the values
-        return transf_label, str(board_base_state)
-    
-    
     def get_possible_actions(self) -> list[tuple[tuple[int, int], Move]]:
         """
         Returns a list of possible actions.
@@ -134,6 +119,8 @@ class Quixo(Game):
         # 2. Play the game
         winner = -1
         while winner < 0:
+
+            # 2.0. Change the current player
             self.change_player()
 
             # 2.1. Print the board if verbose
