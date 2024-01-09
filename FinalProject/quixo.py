@@ -22,9 +22,9 @@ class Quixo(Game):
         # 1. Print the current player or the winner
         symbol = "❌" if self.current_player_idx == 0 else "🔘"
         if win:
-            print(f"Player {symbol} wins the game!")
+            print(f"\nPlayer {symbol} wins the game!")
         else:
-            print(f"Current player: {symbol}")  
+            print(f"\nCurrent player: {symbol}")  
         
         # 2. Print the board
         print("*****************")
@@ -109,7 +109,12 @@ class Quixo(Game):
         self.current_player_idx = 1 - self.current_player_idx
 
     def play(self, player1: Player, player2: Player, verbose: bool=False, debug: bool=False) -> int:
-        '''Play the game. Returns the winning player'''
+        '''
+          This function is a modified version of the play() function in the Game class.
+          It allows the user to have more control over the visualization of each step of the game.
+          - `verbose`: if True, prints the current player, the board and the moves tried by the players
+          - `debug`: if True, prints the number and the list of all possible actions for the current player 
+        '''
 
         # 1. Initialize the players
         players = [player1, player2]
