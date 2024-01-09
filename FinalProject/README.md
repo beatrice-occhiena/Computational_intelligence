@@ -45,7 +45,7 @@ The player then slides the piece back onto the board from a different edge, push
 #### Winning condition
 A player wins by forming a continuous line of five of their pieces, either horizontally, vertically, or diagonally. The game checks for a winner after each turn. If a player has formed such a line, they are declared the winner.
 
-The game continues with players alternating turns until one player wins or the board is in a state where no further moves can lead to a win (though this condition is not explicitly checked in the original `class Game` code).
+The game continues with players alternating turns until one player wins.
 
 ## Preliminary analysis
 
@@ -96,4 +96,8 @@ As mentioned in the previous section, the board has 8 symmetries. This means tha
 In the file [`symmetry.py`](symmetry.py) we've implemented ...
 
 
-Approximating Q function with a Neural Network???
+#TODO
+- Switch 0s and 1s in the board before searching in the Q-table WHEN RL_player moves second
+- Approximating Q function with a Neural Network???
+
+- 

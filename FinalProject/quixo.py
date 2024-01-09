@@ -5,6 +5,7 @@
 """
 
 from game import Game, Move, Player
+from symmetry import SymmetryGenerator
 
 
 class Quixo(Game):
@@ -39,9 +40,20 @@ class Quixo(Game):
             print()
         print()
 
-    def get_hashable_state(self) -> str:
-        """Converts the game state to a hashable string"""
-        return str(self._board)
+    def get_base_state(self) -> tuple[str, str]:
+        """ 
+        Returns:
+        1. the `label` of the transformation applied to the board
+        2. the hashable equivalent of the board `base state`
+        """
+
+        # 1. Generate the base state of the current board
+        SG = SymmetryGenerator()
+        transf_label, board_base_state = SG.get_base_state(self._board)
+
+        # 2. Return the values
+        return transf_label, str(board_base_state)
+    
     
     def get_possible_actions(self) -> list[tuple[tuple[int, int], Move]]:
         """
