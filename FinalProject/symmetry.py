@@ -125,11 +125,11 @@ class SymmetryGenerator:
         """
         # 1. Get the reverse transformation
         if symmetry_to_reverse == "rotate_90":
-            symmetry_to_apply = self.rotate_270
+            symmetry_to_apply = "rotate_270"
         elif symmetry_to_reverse == "rotate_180":
-            symmetry_to_apply = self.rotate_180
+            symmetry_to_apply = "rotate_180"
         elif symmetry_to_reverse == "rotate_270":
-            symmetry_to_apply = self.rotate_90
+            symmetry_to_apply = "rotate_90"
         else:
             symmetry_to_apply = symmetry_to_reverse
         

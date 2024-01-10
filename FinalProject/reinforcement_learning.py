@@ -30,7 +30,7 @@ class RL_Player(Player):
     
     def make_move(self, game: 'Quixo') -> tuple[tuple[int, int], Move]:
         """Select a move based on the learned policy"""
-        from_pos, slide, _ = self._get_action(game)
+        return self._get_action(game)
 
     def _get_base_state(self, game: 'Quixo') -> tuple[str, str]:
         """ 
@@ -76,7 +76,6 @@ class RL_Player(Player):
         Returns:
         1. the position of the piece to move
         2. the direction in which to move it
-        3. the base state and best base action (used to update the Q-table)
         """
 
         # 1. Get all possible actions based on the current game state
@@ -114,8 +113,8 @@ class RL_Player(Player):
             best_action = SG.get_original_action(best_base_action[0], best_base_action[1], transf_label)
             from_pos, slide = best_action
 
-            # 4.6. Return all the necessary values
-            return from_pos, slide, (base_state, best_base_action)
+            # 4.6. Return the action
+            return from_pos, slide
 
     def _get_action_reward(self, game: 'Quixo', action: tuple[tuple[int, int], Move]) -> int:
         """Returns the reward of the given action"""
@@ -174,7 +173,7 @@ class MonteCarloPlayer(RL_Player):
                 self.q_table[(base_state, base_action)] = 0.0
             
             self.q_counters[(base_state, base_action)] += 1
-            self.q_table[(base_state, base_action)] += self.learning_rate * (G - self.q_table[(base_state, base_action)]) / self.q_counters[(base_state, base_action)]
+            self.q_table[(base_state, base_action)] += self.alpha * (G - self.q_table[(base_state, base_action)]) / self.q_counters[(base_state, base_action)]
 
     def train(self, episodes: int = 1000):
         
@@ -209,12 +208,14 @@ class MonteCarloPlayer(RL_Player):
 
                 # 2.3.1. Act according to the current player
                 if current_player == mc_player: # Monte Carlo player
+
+                    # Get the base state of the current board
+                    transf_label, base_state = mc_player._get_base_state(game)
                     
-                    # Get the action to perform and the base action
-                    from_pos, slide, base_state_action = current_player._get_action(game, training_phase=True)
-                    base_state = base_state_action[0]
-                    base_action = base_state_action[1]
-                    
+                    # Get the action to perform and the base action to save in the Q-table
+                    from_pos, slide = current_player._get_action(game, training_phase=True)
+                    base_action = SG.get_base_action(from_pos, slide, transf_label)
+
                     # Get the reward of the action
                     reward = current_player._get_action_reward(game, (from_pos, slide))
                     reward_counter += reward
