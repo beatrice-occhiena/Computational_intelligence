@@ -14,7 +14,7 @@ from tqdm.auto import tqdm
 
 class RL_Player(Player):
     
-    def __init__(self, epsilon=1, alpha=0.2, gamma=0.9, e_decay=0.9999, e_min=0.01) -> None:
+    def __init__(self, epsilon=0.5, alpha=0.2, gamma=0.9, e_decay=0.9999, e_min=0.01) -> None:
         super().__init__()
 
         # Parameters
@@ -155,7 +155,7 @@ class RL_Player(Player):
 
 class MonteCarloPlayer(RL_Player):
     
-    def __init__(self, epsilon=0.3, alpha=0.2, gamma=0.9, e_decay=0.999, e_min=0.01) -> None:
+    def __init__(self, epsilon=0.5, alpha=0.2, gamma=0.9, e_decay=0.9999, e_min=0.2) -> None:
         super().__init__(epsilon, alpha, gamma, e_decay, e_min)
 
     def _update_q_table(self, trajectory):
@@ -180,8 +180,9 @@ class MonteCarloPlayer(RL_Player):
 
     def train(self, episodes: int = 1000):
         
-        # 0. Initialize the symmetry generator
+        # 0. Initialize useful variables
         SG = SymmetryGenerator()
+        min_epsilon_reached = False
 
         # 1. Define the players
         mc_player = self
@@ -199,8 +200,8 @@ class MonteCarloPlayer(RL_Player):
             # 2.2. Initialize the episode
             reward_counter = 0    # Total reward of the episode
             trajectory = []       # List of (state, action, reward) tuples representing the steps of the episode
-            players = (players[1], players[0])      # Switch the players
-            mc_player_id = 1 - mc_player_id         # Switch the player ID
+            #players = (players[1], players[0])      # Switch the players
+            #mc_player_id = 1 - mc_player_id         # Switch the player ID
 
             # 2.3. Play the episode
             while winner < 0:
@@ -261,6 +262,11 @@ class MonteCarloPlayer(RL_Player):
 
             # 2.5. Update the exploration rate
             self.epsilon = max(self.e_min, self.epsilon * self.e_decay)
+
+            # 2.6. Warn the user when the minimum exploration rate is reached
+            if min_epsilon_reached == False and self.epsilon == self.e_min:
+                print("Minimum exploration rate reached!")
+                min_epsilon_reached = True
 
         # ..TRAINING ENDS..................................................
 
