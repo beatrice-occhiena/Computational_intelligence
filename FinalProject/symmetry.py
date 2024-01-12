@@ -2,6 +2,8 @@
     symmetry.py
 
     #TODO: Add a description of the file
+    Rotations in numpy are COUNTER-CLOCKWISE:
+    - https://numpy.org/doc/stable/reference/generated/numpy.rot90.html
 """
 
 import numpy as np
@@ -154,7 +156,7 @@ class SymmetryGenerator:
     
     def coor_rotate_90(self, from_pos: tuple[int, int]):
         # Rotate a position (y, x) by 90 degrees on a 5x5 board
-        return 4-from_pos[1], from_pos[0]
+        return from_pos[1], 4-from_pos[0]
     
     def coor_rotate_180(self, from_pos: tuple[int, int]):
         # Rotate a position (y, x) by 180 degrees on a 5x5 board
@@ -162,7 +164,7 @@ class SymmetryGenerator:
     
     def coor_rotate_270(self, from_pos: tuple[int, int]):
         # Rotate a position (y, x) by 270 degrees on a 5x5 board
-        return from_pos[1], 4-from_pos[0]
+        return 4-from_pos[1], from_pos[0]
     
     def coor_reflect_horizontal(self, from_pos: tuple[int, int]):
         # Reflect a position (y, x) horizontally on a 5x5 board
@@ -188,10 +190,10 @@ class SymmetryGenerator:
     
     def slide_rotate_90(self, slide: Move):
         # Rotate a slide by 90 degrees
-        if slide == Move.TOP: return Move.RIGHT
-        elif slide == Move.BOTTOM: return Move.LEFT
-        elif slide == Move.LEFT: return Move.TOP
-        elif slide == Move.RIGHT: return Move.BOTTOM
+        if slide == Move.TOP: return Move.LEFT
+        elif slide == Move.BOTTOM: return Move.RIGHT
+        elif slide == Move.LEFT: return Move.BOTTOM
+        elif slide == Move.RIGHT: return Move.TOP
 
     def slide_rotate_180(self, slide: Move):
         # Rotate a slide by 180 degrees
@@ -202,10 +204,10 @@ class SymmetryGenerator:
 
     def slide_rotate_270(self, slide: Move):
         # Rotate a slide by 270 degrees
-        if slide == Move.TOP: return Move.LEFT
-        elif slide == Move.BOTTOM: return Move.RIGHT
-        elif slide == Move.LEFT: return Move.BOTTOM
-        elif slide == Move.RIGHT: return Move.TOP
+        if slide == Move.TOP: return Move.RIGHT
+        elif slide == Move.BOTTOM: return Move.LEFT
+        elif slide == Move.LEFT: return Move.TOP
+        elif slide == Move.RIGHT: return Move.BOTTOM
 
     def slide_reflect_horizontal(self, slide: Move):
         # Reflect a slide horizontally

@@ -209,30 +209,33 @@ class MonteCarloPlayer(RL_Player):
                 game.change_player()
                 current_player = players[game.get_current_player()]
 
-                # 2.3.1. Act according to the current player
-                if current_player == mc_player: # Monte Carlo player
+                # 2.3.1. Try to make a move until it is successful
+                ok = False
+                while not ok:
 
-                    # Get the base state of the current board
-                    transf_label, base_state = mc_player._get_base_state(game)
-                    
-                    # Get the action to perform and the base action to save in the Q-table
-                    from_pos, slide = current_player._get_action(game, training_phase=True)
-                    base_action = SG.get_base_action(from_pos, slide, transf_label)
+                    # 2.3.1.1. Act according to the current player
+                    if current_player == mc_player: # Monte Carlo player
 
-                    # Get the reward of the action
-                    reward = current_player._get_action_reward(game, (from_pos, slide))
-                    reward_counter += reward
+                        # Get the base state of the current board
+                        transf_label, base_state = mc_player._get_base_state(game)
+                        
+                        # Get the action to perform and the base action to save in the Q-table
+                        from_pos, slide = current_player._get_action(game, training_phase=True)
+                        base_action = SG.get_base_action(from_pos, slide, transf_label)
 
-                    # Make the move
-                    game.make_move(from_pos, slide)
+                        # Get the reward of the action
+                        reward = current_player._get_action_reward(game, (from_pos, slide))
+                        reward_counter += reward
 
-                    # Store the base state-action-reward in the trajectory
-                    trajectory.append((base_state, base_action, reward))
+                        # Make the move
+                        ok = game.make_move(from_pos, slide)
+                        if not ok:
+                            print("ERROR: The Monte Carlo player tried to make an illegal move")
+                        else: 
+                            # Store the base state-action-reward in the trajectory
+                            trajectory.append((base_state, base_action, reward))
 
-                else: # Random player
-                    
-                    ok = False
-                    while not ok:
+                    else: # Random player
 
                         # Get the action to perform
                         from_pos, slide = current_player.make_move(game)
