@@ -199,8 +199,8 @@ class MonteCarloPlayer(RL_Player):
             # 2.2. Initialize the episode
             reward_counter = 0    # Total reward of the episode
             trajectory = []       # List of (state, action, reward) tuples representing the steps of the episode
-            #players = (players[1], players[0])      # Switch the players
-            #mc_player_id = 1 - mc_player_id         # Switch the player ID
+            players = (players[1], players[0])      # Switch the players
+            mc_player_id = 1 - mc_player_id         # Switch the player ID
 
             # 2.3. Play the episode
             while winner < 0:
@@ -230,9 +230,15 @@ class MonteCarloPlayer(RL_Player):
                     trajectory.append((base_state, base_action, reward))
 
                 else: # Random player
-                    # Make a random move
-                    from_pos, slide = current_player.make_move(game)
-                    game.make_move(from_pos, slide)
+                    
+                    ok = False
+                    while not ok:
+
+                        # Get the action to perform
+                        from_pos, slide = current_player.make_move(game)
+
+                        # Make the move and check if it was successful
+                        ok = game.make_move(from_pos, slide)
 
                 # 2.3.2. Check if there is a winner
                 winner = game.check_winner()
