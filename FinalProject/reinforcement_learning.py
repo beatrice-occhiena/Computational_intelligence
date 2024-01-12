@@ -14,7 +14,7 @@ from tqdm.auto import tqdm
 
 class RL_Player(Player):
     
-    def __init__(self, epsilon=0.1, alpha=0.2, gamma=0.9, e_decay=0.9999, e_min=0.01) -> None:
+    def __init__(self, epsilon=1, alpha=0.2, gamma=0.9, e_decay=0.9999, e_min=0.01) -> None:
         super().__init__()
 
         # Parameters
@@ -113,6 +113,9 @@ class RL_Player(Player):
             best_action = SG.get_original_action(best_base_action[0], best_base_action[1], transf_label)
             from_pos, slide = best_action
 
+            if best_action not in possible_actions:
+                print("ERROR: The best action is not in the list of possible actions")
+
             # 4.6. Return the action
             return from_pos, slide
 
@@ -196,8 +199,8 @@ class MonteCarloPlayer(RL_Player):
             # 2.2. Initialize the episode
             reward_counter = 0    # Total reward of the episode
             trajectory = []       # List of (state, action, reward) tuples representing the steps of the episode
-            players = (players[1], players[0])      # Switch the players
-            mc_player_id = 1 - mc_player_id         # Switch the player ID
+            #players = (players[1], players[0])      # Switch the players
+            #mc_player_id = 1 - mc_player_id         # Switch the player ID
 
             # 2.3. Play the episode
             while winner < 0:

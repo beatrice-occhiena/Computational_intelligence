@@ -12,7 +12,7 @@ class Quixo(Game):
     def __init__(self) -> None:
         super().__init__()
     
-    def print(self, win: bool = False):
+    def print(self, winner: int=-1):
         """
         Prints the current player and the board in a more readable way
         - ⬜ are neutral pieces
@@ -20,15 +20,8 @@ class Quixo(Game):
         - 🔘 are pieces of player 1
         """
 
-        # 1. Print the current player or the winner
-        symbol = "❌" if self.current_player_idx == 0 else "🔘"
-        if win:
-            print(f"\nPlayer {symbol} wins the game!")
-        else:
-            print(f"\nCurrent player: {symbol}")  
-        
-        # 2. Print the board
-        print("*****************")
+        # 1. Print the board
+        print("\n*****************")
         for row in self._board:
             for cell in row:
                 if cell == -1:
@@ -39,6 +32,14 @@ class Quixo(Game):
                     print("🔘", end=" ")
             print()
         print()
+
+        # 2. Print the current player or the winner
+        if winner >= 0:
+            symbol = "❌" if winner == 0 else "🔘"
+            print(f"Player {symbol} wins the game!")
+        else:
+            symbol = "❌" if self.current_player_idx == 0 else "🔘"
+            print(f"Current player: {symbol}")
 
     def get_possible_actions(self) -> list[tuple[tuple[int, int], Move]]:
         """
@@ -155,7 +156,7 @@ class Quixo(Game):
 
         # 3. VERBOSE: Print the final board and the winner
         if verbose:
-            self.print(win=True)
+            self.print(winner)
         
         # 4. Return the winner
         return winner
