@@ -69,7 +69,7 @@ class RL_Player(Player):
         # 5. Return the values
         return transf_label, str(board_base_state)
     
-    def _get_action(self, game: 'Quixo', training_phase: bool=False):
+    def _get_action(self, game: 'Quixo', training_phase: bool=False) -> tuple[tuple[int, int], Move]:
         """
         Find the best action to perform balancing exploration and exploitation.
 

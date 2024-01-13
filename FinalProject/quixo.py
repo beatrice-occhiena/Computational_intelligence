@@ -205,7 +205,6 @@ class Quixo(Game):
         # 6. Return the sequences
         return x_sequences, o_sequences
 
-    
     def check_winner(self) -> int:
         """ Checks if there is a winner."""
         return super().check_winner()
