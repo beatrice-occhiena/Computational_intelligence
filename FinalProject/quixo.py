@@ -98,6 +98,114 @@ class Quixo(Game):
         """Makes a move on the board."""
         return super()._Game__move(from_pos, slide, self.current_player_idx)
     
+    def check_sequences(self) -> tuple[list[int], list[int]]:
+        """Check the number of adjacent 2, 3, 4 and 5 pieces for each player."""
+
+        # 1. Initialize the sequences
+        x_sequences = [0, 0, 0, 0]
+        o_sequences = [0, 0, 0, 0]
+
+        # 2. Check the rows
+        for row in self._board:
+            # 2.1. Initialize the counters
+            x_count = 0
+            o_count = 0
+            # 2.2. Check the pieces in the row
+            for piece in row:
+                # 2.2.1. If the piece belongs to player 0
+                if piece == 0:
+                    #
+                    x_count += 1
+                    o_count = 0
+                # 2.2.2. If the piece belongs to player 1
+                elif piece == 1:
+                    x_count = 0
+                    o_count += 1
+                # 2.2.3. If the piece is neutral
+                else:
+                    x_count = 0
+                    o_count = 0
+                # 2.2.4. Update the sequences
+                if x_count > 1: x_sequences[x_count-2] += 1
+                if o_count > 1: o_sequences[o_count-2] += 1
+        
+        # 3. Check the columns
+        for col in range(5):
+            # 3.1. Initialize the counters
+            x_count = 0
+            o_count = 0
+            # 3.2. Check the pieces in the column
+            for row in range(5):
+                # 3.2.1. Get the piece
+                piece = self._board[row, col]
+                # 3.2.2. If the piece belongs to player 0
+                if piece == 0:
+                    x_count += 1
+                    o_count = 0
+                # 3.2.3. If the piece belongs to player 1
+                elif piece == 1:
+                    x_count = 0
+                    o_count += 1
+                # 3.2.4. If the piece is neutral
+                else:
+                    x_count = 0
+                    o_count = 0
+                # 3.2.5. Update the sequences
+                if x_count > 1: x_sequences[x_count-2] += 1
+                if o_count > 1: o_sequences[o_count-2] += 1
+
+        # 4. Check the principal diagonal
+        # 4.1. Initialize the counters
+        x_count = 0
+        o_count = 0
+        # 4.2. Check the pieces in the diagonal
+        for i in range(5):
+            # 4.2.1. Get the piece
+            piece = self._board[i, i]
+            # 4.2.2. If the piece belongs to player 0
+            if piece == 0:
+                x_count += 1
+                o_count = 0
+            # 4.2.3. If the piece belongs to player 1
+            elif piece == 1:
+                x_count = 0
+                o_count += 1
+            # 4.2.4. If the piece is neutral
+            else:
+                x_count = 0
+                o_count = 0
+            # 4.2.5. Update the sequences
+            if x_count > 1: x_sequences[x_count-2] += 1
+            if o_count > 1: o_sequences[o_count-2] += 1
+
+        # 5. Check the secondary diagonal
+        # 5.1. Initialize the counters
+        x_count = 0
+        o_count = 0
+        # 5.2. Check the pieces in the diagonal
+        for i in range(5):
+            # 5.2.1. Get the piece
+            piece = self._board[i, -(i+1)]
+            # 5.2.2. If the piece belongs to player 0
+            if piece == 0:
+                x_count += 1
+                o_count = 0
+            # 5.2.3. If the piece belongs to player 1
+            elif piece == 1:
+                x_count = 0
+                o_count += 1
+            # 5.2.4. If the piece is neutral
+            else:
+                x_count = 0
+                o_count = 0
+            # 5.2.5. Update the sequences
+            if x_count > 1: x_sequences[x_count-2] += 1
+            if o_count > 1: o_sequences[o_count-2] += 1
+
+        # 6. Return the sequences
+        return x_sequences, o_sequences
+
+    
     def check_winner(self) -> int:
         """ Checks if there is a winner."""
         return super().check_winner()
