@@ -72,7 +72,7 @@ class MinimaxPlayer(Player):
                 alpha = max(alpha, best_value)
 
                 # 2.2.5. Check if we can prune
-                if best_value >= beta:
+                if beta <= alpha:
                     break
             
             # 2.3. Return the best value and the best action
@@ -105,7 +105,7 @@ class MinimaxPlayer(Player):
                 beta = min(beta, best_value)
                 
                 # 3.2.5. Check if we can prune
-                if best_value <= alpha:
+                if beta <= alpha:
                     break
             
             # 3.3. Return the best value and the best action
