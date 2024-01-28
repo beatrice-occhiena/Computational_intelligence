@@ -99,7 +99,11 @@ class Quixo(Game):
         return super()._Game__move(from_pos, slide, self.current_player_idx)
     
     def check_sequences(self) -> tuple[list[int], list[int]]:
-        """Check the number of adjacent 2, 3, 4 and 5 pieces for each player."""
+        """
+            Check the number of adjacent 2, 3, 4 and 5 pieces for each player.
+            Additionally, check the number of 4 pieces in a line, even if they are not adjacent 
+            - (e.g. X X O X X or X X X O X).
+        """
 
         # 1. Initialize the sequences
         x_sequences = [0, 0, 0, 0]
@@ -110,30 +114,38 @@ class Quixo(Game):
             # 2.1. Initialize the counters
             x_count = 0
             o_count = 0
+            x_tot = 0
+            o_tot = 0
             # 2.2. Check the pieces in the row
             for piece in row:
                 # 2.2.1. If the piece belongs to player 0
                 if piece == 0:
-                    #
                     x_count += 1
                     o_count = 0
+                    x_tot += 1
                 # 2.2.2. If the piece belongs to player 1
                 elif piece == 1:
                     x_count = 0
                     o_count += 1
+                    o_tot += 1
                 # 2.2.3. If the piece is neutral
                 else:
                     x_count = 0
                     o_count = 0
-                # 2.2.4. Update the sequences
+                # 2.2.4. Update the sequences of consecutive pieces
                 if x_count > 1: x_sequences[x_count-2] += 1
                 if o_count > 1: o_sequences[o_count-2] += 1
+                # 2.2.5. Update the sequences of 4 pieces even if they are not consecutive
+                if x_tot == 4: x_sequences[2] += 1
+                if o_tot == 4: o_sequences[2] += 1
         
         # 3. Check the columns
         for col in range(5):
             # 3.1. Initialize the counters
             x_count = 0
             o_count = 0
+            x_tot = 0
+            o_tot = 0
             # 3.2. Check the pieces in the column
             for row in range(5):
                 # 3.2.1. Get the piece
@@ -142,22 +154,29 @@ class Quixo(Game):
                 if piece == 0:
                     x_count += 1
                     o_count = 0
+                    x_tot += 1
                 # 3.2.3. If the piece belongs to player 1
                 elif piece == 1:
                     x_count = 0
                     o_count += 1
+                    o_tot += 1
                 # 3.2.4. If the piece is neutral
                 else:
                     x_count = 0
                     o_count = 0
-                # 3.2.5. Update the sequences
+                # 3.2.5. Update the sequences of consecutive pieces
                 if x_count > 1: x_sequences[x_count-2] += 1
                 if o_count > 1: o_sequences[o_count-2] += 1
+                # 3.2.6. Update the sequences of 4 pieces even if they are not consecutive
+                if x_tot == 4: x_sequences[2] += 1
+                if o_tot == 4: o_sequences[2] += 1
 
         # 4. Check the principal diagonal
         # 4.1. Initialize the counters
         x_count = 0
         o_count = 0
+        x_tot = 0
+        o_tot = 0
         # 4.2. Check the pieces in the diagonal
         for i in range(5):
             # 4.2.1. Get the piece
@@ -166,22 +185,29 @@ class Quixo(Game):
             if piece == 0:
                 x_count += 1
                 o_count = 0
+                x_tot += 1
             # 4.2.3. If the piece belongs to player 1
             elif piece == 1:
                 x_count = 0
                 o_count += 1
+                o_tot += 1
             # 4.2.4. If the piece is neutral
             else:
                 x_count = 0
                 o_count = 0
-            # 4.2.5. Update the sequences
+            # 4.2.5. Update the sequences of consecutive pieces
             if x_count > 1: x_sequences[x_count-2] += 1
             if o_count > 1: o_sequences[o_count-2] += 1
+            # 4.2.6. Update the sequences of 4 pieces even if they are not consecutive
+            if x_tot == 4: x_sequences[2] += 1
+            if o_tot == 4: o_sequences[2] += 1
 
         # 5. Check the secondary diagonal
         # 5.1. Initialize the counters
         x_count = 0
         o_count = 0
+        x_tot = 0
+        o_tot = 0
         # 5.2. Check the pieces in the diagonal
         for i in range(5):
             # 5.2.1. Get the piece
@@ -190,17 +216,22 @@ class Quixo(Game):
             if piece == 0:
                 x_count += 1
                 o_count = 0
+                x_tot += 1
             # 5.2.3. If the piece belongs to player 1
             elif piece == 1:
                 x_count = 0
                 o_count += 1
+                o_tot += 1
             # 5.2.4. If the piece is neutral
             else:
                 x_count = 0
                 o_count = 0
-            # 5.2.5. Update the sequences
+            # 5.2.5. Update the sequences of consecutive pieces
             if x_count > 1: x_sequences[x_count-2] += 1
             if o_count > 1: o_sequences[o_count-2] += 1
+            # 5.2.6. Update the sequences of 4 pieces even if they are not consecutive
+            if x_tot == 4: x_sequences[2] += 1
+            if o_tot == 4: o_sequences[2] += 1
 
         # 6. Return the sequences
         return x_sequences, o_sequences
