@@ -10,6 +10,7 @@
 - Tanaka, Satoshi & Bonnet, François & Tixeuil, Sebastien & Tamura, Yasumasa. (2020). *Quixo Is Solved.*
 - Anurag Bhatt, Pratul Varshney, Kalyanmoy Deb. (KanGAL Report Number 2007002). *Evolution of No-loss Strategies for the Game of Tic-Tac-Toe*
 
+**Collaborators:** This project was developed in collaboration with [Alessandro Chiabodo s309234](https://github.com/AChiabodo/compIntelligence.git)
 .
 
 .
@@ -100,4 +101,36 @@ In the file [`symmetry.py`](symmetry.py) we've implemented ...
 - Switch 0s and 1s in the board before searching in the Q-table WHEN RL_player moves second
 - Approximating Q function with a Neural Network???
 
-- 
+
+# MiniMax
+
+The minimax algorithm is a decision-making algorithm used in two-player turn-based games. It is particularly popular in board games like chess, tic-tac-toe, and Quixo. The goal of the minimax algorithm is to find the optimal move for a player, assuming that the opponent also plays optimally. The algorithm explores the game tree, representing all possible moves and counter-moves, and assigns a value to each node in the tree.
+
+Game Tree Representation:
+
+The game state is represented as a tree, where each node corresponds to a possible state of the game.
+Nodes at even depths represent the current player's turn, and nodes at odd depths represent the opponent's turn.
+Recursive Evaluation:
+
+The algorithm recursively evaluates the nodes of the tree by assigning a value to each node.
+For terminal nodes (leaves of the tree), the algorithm uses an evaluation function to determine the utility or score of the state.
+Maximizing and Minimizing Players:
+
+For nodes representing the current player's turn (maximizing player), the algorithm selects the child node with the maximum value.
+For nodes representing the opponent's turn (minimizing player), the algorithm selects the child node with the minimum value.
+Backpropagation:
+
+The selected values are propagated back up the tree to update the values of parent nodes.
+At each level, the maximizing player seeks to maximize the value, and the minimizing player seeks to minimize the value.
+Optimization - Alpha-Beta Pruning:
+
+To improve efficiency, the algorithm uses alpha-beta pruning, which eliminates branches that cannot possibly affect the final decision.
+Alpha represents the best value found by the maximizing player, and beta represents the best value found by the minimizing player.
+Final Decision:
+
+After exploring the entire tree or reaching a specified depth, the algorithm makes the final decision based on the root node's children.
+In summary, the minimax algorithm provides a systematic way to explore the entire game tree, considering all possible moves and counter-moves. The use of alpha-beta pruning helps reduce the number of nodes that need to be evaluated, making the algorithm more efficient.
+
+
+
+
