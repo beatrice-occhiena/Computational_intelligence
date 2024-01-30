@@ -138,8 +138,8 @@ class MinimaxPlayer(Player):
             opponent_sequences = x_sequences
         
         # 3. Get the total score
-        player_score = player_sequences[0] + player_sequences[1] * 3 + player_sequences[2] * 5
-        opponent_score = opponent_sequences[0] + opponent_sequences[1] * 3 + opponent_sequences[2] * 5
+        player_score = player_sequences[0] + player_sequences[1] * 3 + player_sequences[2] * 15
+        opponent_score = opponent_sequences[0] + opponent_sequences[1] * 3 + opponent_sequences[2] * 15
         return player_score - opponent_score
 
 
