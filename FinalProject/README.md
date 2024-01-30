@@ -20,7 +20,7 @@
 ## Introduction
 The aim of this project is to develop a player for the game Quixo, a board game invented by Thierry Chapeau and published by Gigamic in 1991.
 
-### Game description
+### Game Description
 Quixo is played on a 5x5 board. Each square of the board initially contains a neutral piece, represented by -1 in the code. The game is played by two players:
 - Player 0: ❌
 - Player 1: 🔘
@@ -43,52 +43,94 @@ A piece can only be taken from the edge of the board if it is either neutral or 
 The player then slides the piece back onto the board from a different edge, pushing the other pieces to make room.
 > The direction in which a piece can be slid back onto the board depends on its position. Pieces not in a corner can be moved in 3 directions (parallel to the edge they are on and from the opposite edge). Pieces in a corner can only be moved in 2 directions (from the opposite edges).
 
-#### Winning condition
+#### Winning Condition
 A player wins by forming a continuous line of five of their pieces, either horizontally, vertically, or diagonally. The game checks for a winner after each turn. If a player has formed such a line, they are declared the winner.
 
 The game continues with players alternating turns until one player wins.
 
-## Preliminary analysis
+## Preliminary Analysis
 
-### Game state representation
-The game state of Quixo is represented by the **active player** and a **5x5 matrix**, where each element can be:
-- -1: neutral piece
-- 0: player ❌ piece
-- 1: player 🔘 piece
+### Game State Representation
 
-The plain game state is stored in the already provided `class Game`.
+The game state of Quixo is represented by:
+- The currently **active player**
+- The arrangement of the pieces on a **5x5 matrix**, where each element can be:
+  - -1: neutral piece
+  - 0: player ❌'s piece
+  - 1: player 🔘's piece
 
-> It's important to note that, unlike other games like [Tic-Tac-Toe](../Labs/Lab_10/tictactoe.ipynb), the active player cannot be determined by the distribution of the pieces on the board. This is because the player can take an already owned piece and move it to another position. 
+> It's important to note that, unlike other games like [Tic-Tac-Toe](../Labs/Lab_10/tictactoe.ipynb), the active player cannot be determined by the distribution of the pieces on the board. This is because the player can take an already owned piece and move it to another position.
 
-#### State-space size
+### State-Space Size
 
-Given the characteristics of the game, the state-space size is not excessively large. In fact, the number of possible states is **upper-bounded** by $2 \cdot 3^{25}$, which is approximately $1.5 \cdot 10^{12}$.
+Since we have 25 squares on the board, 3 possible symbols for each square, and 2 possible players, we can set the **upper-bound estimate** of possible states to approximately $2 \cdot 3^{25}$, which equals about $1.5 \cdot 10^{12}$.
 
-Although it is possible to fill the 25 squares of the board with 3 different pieces, considering one of the 2 players as active, the number of `unique states` is luckily much lower than the upper bound.
+While the state-space size is theoretically pretty large, we can assume that the actual number of unique states is significantly lower than the upper bound.
 
-> Some states are **infeasible**, i.e. they cannot be reached by playing the game.
+#### 🚫 Infeasible States
 
-For example, a state where there are 2 or more X pieces but no O pieces is infeasible, because once the second player moves a neutral piece, it will be marked as O.
+Some states in Quixo are infeasible, meaning they cannot be reached through regular gameplay. For instance, a state with multiple X pieces but no O pieces is infeasible since the second player will necessarily place an O piece when making their move.
 
-> However, the most important factor that reduces the number of unique states is the symmetric nature of the board. The board has **8 symmetries**:
-- 4 rotations *(0°, 90°, 180°, 270°)*
-- 4 reflections *(horizontal, vertical, diagonal, anti-diagonal)*
+#### ♊ Symmetric Nature of the Board
 
-Given a state, we can therefore generate a maximum of 8 `equivalent states` by applying each of the 8 symmetries. 
+Another crucial factor that reduces the number of unique states in Quixo is the symmetry inherent in the game board. The board exhibits eight symmetrical transformations:
 
-#### State-space structure
+- **4 rotations** (0°, 90°, 180°, 270°)
+- **4 reflections** (horizontal, vertical, diagonal, anti-diagonal)
+
+Given any state, we can generate up to eight `equivalent states` by applying each of these eight symmetries.
+
+#### 🟰 Players Equivalence
+
+In Quixo, both players share the **same winning strategy** as their counterpart if the pieces on the board are **reversed**. Consequently, by considering the current player as `always X`, we can simplify our analysis to just the state of the board.
+
+By focusing solely on the current state of the board and ignoring the identity of the player, we effectively halve the state-space size and streamline the decision-making process for our AI algorithms.
+
+### State-Space Structure
 
 In choosing a strategy, it is fundamental to consider that  the state-space cannot be perfectly represented as a tree due to the nature of the gameplay. Particularly towards the end of the game, when the board is nearly full, most moves don't add new pieces. Instead, they just move the pieces that are already there. This creates **cycles** in the game, where we might see the same arrangement of pieces more than once.
 
 > Because of this looping, we have to think of the game more like a **graph**, where these repeated patterns can happen.
 
-##### Consequences
+#### Consequences
 1. **Complexity in Game Tree Search Algorithms** - The possibility of revisiting states in Quixo complicates algorithms like Minimax, as they need to account for cycles and repeated states to avoid infinite loops and redundant computations.
 2. **Memory Management** - In AI implementations, especially those using search strategies, it's crucial to remember which states have been visited to prevent redundant evaluations and infinite loops. This requires more sophisticated memory management than a simple tree traversal.
 
+### Maximum Possible Actions
+The maximum number of possible actions for each state depends on several factors:
+- **Empty Spaces**: The number of empty spaces on the board determines the potential moves.
+- **Player Turn**: Whether it's player X's or player O's turn influences which pieces can be moved.
+- **Pieces Arrangement**: Available pieces on the corners offer less movement options.
+
+Considering the initial empty board, we can calculate the upper bound for the number of possible actions as follows: 
+
+> $( 3_{border pieces} * 3_{directions} + 1_{corner piece} * 2_{directions}) * 4_{sides} =44$ possible actions.
+
+This implies that the game-state tree has a maximum of 44 children for each node.
+
+### Our Considerations
+
+In light of the above, both MiniMax and Reinforcement Learning (RL) agents seemed like good choices for developing our players.
+
+#### 🔸 MiniMax Agent
+MiniMax is a classic algorithm for making decisions in adversarial games like Quixo. It explores the game tree by recursively evaluating possible moves up to a certain depth, maximizing its chances of winning while minimizing the opponent's. 
+- **Deterministic Nature**: Quixo is a deterministic, turn-based game with perfect information. The deterministic nature allows us to easily explore sections of the game-state tree.
+- **Branching Factor**: The relatively low branching factor (maximum 44 moves per turn) of the game tree makes MiniMax particularly effective in Quixo.
+- **Sound Strategy**: MiniMax could potentially guarantee a very good strategy by exploring the tree in depth.
+- **Player Symmetry**: The symmetric nature of the game, where players share winning strategies, aligns well with MiniMax's approach, simplifying the decision-making process.
+
+#### 🔹 Reinforcement Learning Agent
+Reinforcement Learning is a powerful paradigm for learning optimal strategies through trial and error. RL agents, such as those based on Monte Carlo algorithm, can adapt and improve their performance over time by interacting with the environment and receiving feedback in the form of rewards. 
+- **State-Space Complexity**: Despite the large state space, the symmetric properties of Quixo can help mitigate the complexity, making RL a viable option. 
+- **Player Equivalence**: The equivalence of strategies between players makes RL particularly suitable, as the agent can learn a comprehensive policy without differentiating between the two players.
+- **Adaptability**: RL agents have the potential to discover nuanced strategies that might not be immediately apparent to human players.
+
+By combining the strengths of both MiniMax and RL agents, we aim to create a versatile AI system capable of optimal decision-making in Quixo, leveraging the deterministic nature and strategic symmetry of the game.
+
+
 ## Implementation
 
-### Quixo extended class
+### Quixo Extended Class
 We've created 
 
 ### Symmetry Management
