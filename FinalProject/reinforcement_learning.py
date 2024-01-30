@@ -10,6 +10,7 @@ from symmetry import SymmetryGenerator
 from quixo import Quixo
 from random import choice, random
 from abc import abstractmethod
+from copy import deepcopy
 from tqdm.auto import tqdm
 
 class RL_Player(Player):
@@ -81,45 +82,66 @@ class RL_Player(Player):
         # 1. Get all possible actions based on the current game state
         possible_actions = game.get_possible_actions()
 
-        # 2. EXLORATION: Choose a random action (only during training)
+        # 2. GUIDED EXPLORATION: Choose the action that maximizes the next state's reward
         if training_phase and random() < self.epsilon:
-            return choice(possible_actions)
+            
+            # 2.0. Initialize the variables
+            max_reward = float('-inf')
+            best_action = choice(possible_actions)
+            game_copy = deepcopy(game)
+
+            # 2.1. For each possible action
+            for from_pos, slide in possible_actions:
+
+                # 2.1.1. Simulate the action and get the reward
+                _, reward, _ = self._get_action_reward(game_copy, (from_pos, slide))
+
+                # 2.1.2. Add some noise to the reward to avoid depending only to the order of the actions
+                reward += random() 
+
+                # 2.1.2. If the reward is better than the current best reward => update the best action
+                if reward > max_reward:
+                    max_reward = reward
+                    best_action = (from_pos, slide)
+
+            return best_action
         
-        # 4. EXPLOITATION: Choose the action with the highest Q-value
+        # 3. EXPLOITATION: Choose the action with the highest Q-value or the one that maximizes the next state's reward
         else:
             
-            # 4.0. Set the symmetry generator
+            # 3.0. Set the symmetry generator
             SG = SymmetryGenerator()
             
-            # 4.1. Get the hashable base state of the current board and the transformation applied
+            # 3.1. Get the hashable base state of the current board and the transformation applied
             transf_label, base_state = self._get_base_state(game)
 
-            # 4.2. Transform the actions to base actions
+            # 3.2. Transform the actions to base actions
             base_actions = []
             for from_pos, slide in possible_actions:
                 base_actions.append(SG.get_base_action(from_pos, slide, transf_label))
 
-            # 4.3. Get the Q-values of the base actions
+            # 3.3. Get the Q-values of the base actions
             q_values = []
             for base_action in base_actions:
 
-                # 4.3.1. If the state-action pair is not in the Q-table
-                # ---> return a random Q-value between 0 and 1 to inject some variability in choosing the max
-                q_values.append(self.q_table.get((base_state, base_action), random()))
+                # 3.3.1. If the state-action pair is not in the Q-table
+                # => return a random Q-value between -50 and 50 to inject some variability in choosing the max
+                q_values.append(self.q_table.get((base_state, base_action), random() * 100 - 50))
 
-            # 4.4. Get the action with the highest Q-value
+            # 3.4. Get the action with the highest Q-value
             max_q_value = max(q_values)
             max_q_value_idx = q_values.index(max_q_value)
             best_base_action = base_actions[max_q_value_idx]
 
-            # 4.5. Transform the action to the original action to be used in the game
+            # 3.5. Transform the action to the original action to be used in the game
             best_action = SG.get_original_action(best_base_action[0], best_base_action[1], transf_label)
             from_pos, slide = best_action
 
+            # 3.6. ERROR-CHECK
             if best_action not in possible_actions:
                 print("ERROR: The best action is not in the list of possible actions")
 
-            # 4.6. Return the action
+            # 3.7. Return the action
             return from_pos, slide
 
     def _get_action_reward(self, game: 'Quixo', action: tuple[tuple[int, int], Move]) -> tuple[bool, int, int]:
@@ -135,66 +157,35 @@ class RL_Player(Player):
         if game.get_board()[from_pos[1]][from_pos[0]] == -1:
             reward += 1
 
-        """
-        # 2. Get the sequences of X and O before the move
-        x_sequences, o_sequences = game.check_sequences()
-        """
-
-        # 3. Try to make the move        
+        # 2. ERROR-CHECK: if the move is illegal, return false
         ok = game.make_move(from_pos, slide)
         if not ok:
-            return ok, 0
+            return ok, 0, -1
         
-        """
-        # 4. Get the sequences of X and O after the move
-        x_sequences_after, o_sequences_after = game.check_sequences()
+        # 3. Get the sequences of X and O after the move
+        x_sequences, o_sequences = game.check_sequences()
 
-        # 5. If the player is X, get a reward for completing a sequence of X
+        # 4. Set the sequences to complete and to break based on the current player
         if player_id == 0:
-            seq_to_complete = x_sequences
-            seq_to_complete_after = x_sequences_after
-            seq_to_break = o_sequences
-            seq_to_break_after = o_sequences_after
-
-        # 6. If the player is O, get a reward for completing a sequence of O
+            player_sequences = x_sequences
+            opponent_sequences = o_sequences
         else:
-            seq_to_complete = o_sequences
-            seq_to_complete_after = o_sequences_after
-            seq_to_break = x_sequences
-            seq_to_break_after = x_sequences_after
+            player_sequences = o_sequences
+            opponent_sequences = x_sequences
 
-        # 7. Get the reward for completing one's own sequence
-        if seq_to_complete_after[3] > seq_to_complete[3]: # Sequences of 5
+        # 5. (+) REWARD: Get the reward based on the sequences of the current player
+        reward += player_sequences[0] * 1 + player_sequences[1] * 3 + player_sequences[2] * 7
+        if player_sequences[3] > 0:
+            # Win the game
+            reward = 100
             winner = player_id
-            reward = 20
-            return ok, reward, winner
-        if seq_to_complete_after[2] > seq_to_complete[2]: # Sequences of 4
-            reward += 7
-        if seq_to_complete_after[1] > seq_to_complete[1]: # Sequences of 3
-            reward += 5
-        if seq_to_complete_after[0] > seq_to_complete[0]: # Sequences of 2
-            reward += 3
 
-        # 8. Get the reward for breaking the opponent's sequence
-        if seq_to_break_after[2] < seq_to_break[2]: # Sequences of 4
-            reward += 4
-        if seq_to_break_after[1] < seq_to_break[1]: # Sequences of 3
-            reward += 2
-        if seq_to_break_after[0] < seq_to_break[0]:
-            reward += 1
-
-        # 9. Get a penalty for completing the opponent's sequence
-        if seq_to_complete_after[3] > seq_to_complete[3]:
-            reward = -50 # The move makes the opponent win !!!
+        # 6. (-) REWARD: Get the reward based on the sequences of the opponent
+        reward -= opponent_sequences[0] * 1 + opponent_sequences[1] * 3 + opponent_sequences[2] * 7
+        if opponent_sequences[3] > 0:
+            # Lose the game with its own move
+            reward = -200
             winner = 1 - player_id
-            return ok, reward, winner
-        if seq_to_break_after[2] > seq_to_break[2]:
-            reward -= 5
-        if seq_to_break_after[1] > seq_to_break[1]:
-            reward -= 3
-        if seq_to_break_after[0] > seq_to_break[0]:
-            reward -= 1        
-        """
 
         return ok, reward, winner
     
@@ -202,13 +193,10 @@ class RL_Player(Player):
         """Get the reward based on the winner of the game"""
         # 1. Give a big positive reward if the RL player wins
         if winner == rl_player_id:
-            return 20
-        # 2. Do not give any reward if there is no winner
-        elif winner == -1:
-            return 0
-        # 3. Give a big negative reward if the RL player loses
+            return 100
+        # 2. Give a big negative reward if the RL player loses
         else:
-            return -20
+            return -100
 
     @abstractmethod
     def _update_q_table(self, state: tuple[str, str], action: tuple[tuple[int, int], Move], reward: int, next_state: tuple[str, str]):
@@ -228,7 +216,7 @@ class RL_Player(Player):
 
 class MonteCarloPlayer(RL_Player):
     
-    def __init__(self, epsilon=1, alpha=0.2, gamma=0.9, e_decay=0.99999, e_min=0.2) -> None:
+    def __init__(self, epsilon=1, alpha=0.2, gamma=0.95, e_decay=0.99999, e_min=0.2) -> None:
         super().__init__(epsilon, alpha, gamma, e_decay, e_min)
 
     def _update_q_table(self, trajectory):
@@ -297,8 +285,18 @@ class MonteCarloPlayer(RL_Player):
                         from_pos, slide = current_player._get_action(game, training_phase=True)
                         base_action = SG.get_base_action(from_pos, slide, transf_label)
 
+                        #### print(f"MC player board:\n{game.get_board()}")
+                        #### print(f"MC player base state:\n{base_state}")
+                        #### print(f"MC player action: {from_pos} {slide}")
+                        #### print(f"MC player base action: {base_action}")
+                        #### print("****************************")
+
                         # Make the move and get the reward
                         ok, reward, winner = current_player._get_action_reward(game, (from_pos, slide))
+
+                        #### print(f"MC player board:\n{game.get_board()}")
+                        #### print(f"MC player reward: {reward}")
+                        #### print("---------------------------")
                         
                         # Check if the move was successful
                         if not ok:
@@ -308,7 +306,7 @@ class MonteCarloPlayer(RL_Player):
                             reward_counter += reward
 
                             # Store the base state-action-reward in the trajectory
-                            trajectory.append((base_state, base_action, reward))
+                            trajectory.append((base_state, base_action, 0))
 
                     else: # Random player
 
@@ -319,7 +317,14 @@ class MonteCarloPlayer(RL_Player):
                         ok = game.make_move(from_pos, slide)
 
                 # 2.3.2. Check if there is a winner
-                if winner == -1: # No winner after getting the reward => win due to the random player
+                if winner >= 0: 
+                    
+                    # 2.3.2.1. Win due to Monte Carlo player's last move
+                    # => update the last state-action pair in the trajectory with the total episode reward
+                    trajectory[-1] = (trajectory[-1][0], trajectory[-1][1], reward_counter)
+                else:
+
+                    # 2.3.2.2. Possible win due to Random player's last move
                     winner = game.check_winner()
                     if winner >= 0:
                         
@@ -328,9 +333,11 @@ class MonteCarloPlayer(RL_Player):
                         reward_counter += end_reward
 
                         # Update the last state-action pair in the trajectory with the final reward
-                        trajectory[-1] = (trajectory[-1][0], trajectory[-1][1], end_reward)
+                        trajectory[-1] = (trajectory[-1][0], trajectory[-1][1], reward_counter)                        
 
-            # ..EPISODE ENDS..............................................  
+            # ..EPISODE ENDS..............................................
+                        
+            #### print(f"Trajectory: \n{trajectory}\n\n")
 
             # 2.4. Update the Q-table
             self._update_q_table(trajectory)
@@ -342,9 +349,3 @@ class MonteCarloPlayer(RL_Player):
             if min_epsilon_reached == False and self.epsilon == self.e_min:
                 print("Minimum exploration rate reached!")
                 min_epsilon_reached = True
-
-        # ..TRAINING ENDS..................................................
-
-        # 3. Save the Q-table
-        self._save_q_table("q_table.csv")
-            
