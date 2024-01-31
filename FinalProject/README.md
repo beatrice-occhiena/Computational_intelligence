@@ -17,6 +17,40 @@
 
 # Final Project: Quixo Player
 
+## Table of Contents
+- [Introduction](#introduction)
+- [Preliminary Analysis](#preliminary-analysis)
+  - [Game State Representation](#game-state-representation)
+  - [State-Space Size](#state-space-size)
+    - [Infeasible States](#infeasible-states)
+    - [Symmetric Nature of the Board](#symmetric-nature-of-the-board)
+    - [Players Equivalence](#players-equivalence)
+  - [State-Space Structure](#state-space-structure)
+    - [Consequences](#consequences)
+  - [Maximum Possible Actions](#maximum-possible-actions)
+  - [Our Considerations](#our-considerations)
+    - [MiniMax Agent](#minimax-agent)
+    - [Reinforcement Learning Agent](#reinforcement-learning-agent)
+- [Implementation](#implementation)
+  - [Quixo Extended Class](#quixo-extended-class)
+    - [Initialization](#initialization)
+    - [Move Count](#move-count)
+    - [Printing](#printing)
+    - [Possible Actions](#possible-actions)
+    - [Making Moves](#making-moves)
+    - [Sequence Checking](#sequence-checking)
+    - [Checking for a Winner](#checking-for-a-winner)
+    - [Changing Players](#changing-players)
+    - [Playing a Game](#playing-a-game)
+  - [MiniMax Agent](#minimax-agent-1)
+    - [Game Tree Representation](#game-tree-representation)
+    - [Recursive Evaluation](#recursive-evaluation)
+    - [Maximizing and Minimizing Players](#maximizing-and-minimizing-players)
+    - [Alpha-Beta Pruning Optimization](#alpha-beta-pruning-optimization)
+  - [Reinforcement Learning Agent](#reinforcement-learning-agent-1)
+    - [Symmetry Management](#symmetry-management)
+
+
 ## Introduction
 The aim of this project is to develop a player for the game Quixo, a board game invented by Thierry Chapeau and published by Gigamic in 1991.
 
@@ -169,40 +203,43 @@ The `Quixo` class serves as a wrapper for the provided `Game` class, offering ad
 - The `play` method initiates a game between two players, taking them as arguments and providing an option for verbosity and debugging. 
 - It mantains the same structure as the `play` method in the `Game` class, but it uses our `print` method to give a more user-friendly output.
 
-### Reinforcement Learning
+### MiniMax Agent
+
+The minimax algorithm is a decision-making algorithm used in two-player turn-based games. It is particularly popular in board games like chess, tic-tac-toe, and Quixo. 
+- The goal of the minimax algorithm is to find the optimal move for a player, assuming that the opponent also plays optimally.
+- The algorithm explores the game tree, representing all possible moves and counter-moves, and assigns a value to each node in the tree.
+
+The file [`minimax.py`](minimax.py) contains the implementation of our MiniMax agent.
+
+#### 🌳 Game Tree Representation
+
+The game state is represented as a tree, where each node corresponds to a possible state of the game. Nodes at even depths represent the current player's turn, and nodes at odd depths represent the opponent's turn.
+
+#### ♻️ Recursive Evaluation
+
+The algorithm recursively evaluates the nodes of the tree by assigning a value to each node.
+For terminal nodes (leaves of the tree), the algorithm uses our `evaluate` function to determine the utility or score of the state.
+- The function is based on the number of sequences of 2, 3, 4, and 5 pieces for each player.
+- It returns a positive value if the current player has more combinations than the opponent.
+- It returns the maximum/minumum possible value if the current player has won/lost the game.
+
+
+#### 🔃 Maximizing and Minimizing Players
+
+- For nodes representing the current player's turn (*maximizing player*), the algorithm selects the child node with the maximum value.
+- For nodes representing the opponent's turn (*minimizing player*), the algorithm selects the child node with the minimum value.
+
+#### ✂️ Alpha-Beta Pruning Optimization
+
+To improve efficiency, our algorithm uses alpha-beta pruning, which eliminates branches that cannot possibly affect the final decision.
+- Alpha represents the best value found by the maximizing player.
+- Beta represents the best value found by the minimizing player.
+
+### Reinforcement Learning Agent
 
 #### ♊ Symmetry Management
 As mentioned in the previous section, the board has 8 symmetries. This means that, given a state, we can generate up to 8 equivalent states.
 
 In the file [`symmetry.py`](symmetry.py) we've implemented ...
-
-### MiniMax
-
-The minimax algorithm is a decision-making algorithm used in two-player turn-based games. It is particularly popular in board games like chess, tic-tac-toe, and Quixo. The goal of the minimax algorithm is to find the optimal move for a player, assuming that the opponent also plays optimally. The algorithm explores the game tree, representing all possible moves and counter-moves, and assigns a value to each node in the tree.
-
-Game Tree Representation:
-
-The game state is represented as a tree, where each node corresponds to a possible state of the game.
-Nodes at even depths represent the current player's turn, and nodes at odd depths represent the opponent's turn.
-Recursive Evaluation:
-
-The algorithm recursively evaluates the nodes of the tree by assigning a value to each node.
-For terminal nodes (leaves of the tree), the algorithm uses an evaluation function to determine the utility or score of the state.
-Maximizing and Minimizing Players:
-
-For nodes representing the current player's turn (maximizing player), the algorithm selects the child node with the maximum value.
-For nodes representing the opponent's turn (minimizing player), the algorithm selects the child node with the minimum value.
-Backpropagation:
-
-The selected values are propagated back up the tree to update the values of parent nodes.
-At each level, the maximizing player seeks to maximize the value, and the minimizing player seeks to minimize the value.
-Optimization - Alpha-Beta Pruning:
-
-To improve efficiency, the algorithm uses alpha-beta pruning, which eliminates branches that cannot possibly affect the final decision.
-Alpha represents the best value found by the maximizing player, and beta represents the best value found by the minimizing player.
-Final Decision:
-
-After exploring the entire tree or reaching a specified depth, the algorithm makes the final decision based on the root node's children.
-In summary, the minimax algorithm provides a systematic way to explore the entire game tree, considering all possible moves and counter-moves. The use of alpha-beta pruning helps reduce the number of nodes that need to be evaluated, making the algorithm more efficient.
 
 
