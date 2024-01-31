@@ -15,7 +15,7 @@ from tqdm.auto import tqdm
 
 class RL_Player(Player):
     
-    def __init__(self, epsilon=1, alpha=0.2, gamma=0.9, e_decay=0.99999, e_min=0.2) -> None:
+    def __init__(self, epsilon=1, alpha=0.2, gamma=0.9, e_decay=0.99999, e_min=0.2, guided_extension=False, opening_moves=5) -> None:
         super().__init__()
 
         # Parameters
@@ -28,10 +28,77 @@ class RL_Player(Player):
         # Structures
         self.q_table = {}        # Q(s, a)
         self.q_counters = {}     # N(s, a)
+
+        # Guided Extension
+        # If True, the agent will only exploit its learned policy for the first opening_moves
+        self.guided_extension = guided_extension
+        self.opening_moves = opening_moves
     
     def make_move(self, game: 'Quixo') -> tuple[tuple[int, int], Move]:
-        """Select a move based on the learned policy"""
-        return self._get_action(game)
+        """
+        Returns the best action for the current player using the Q-table
+        
+        (GUIDED EXTENSION)
+        - The opening moves are still guided by the learned policy
+        - After the opening moves, the agent will choose the action that maximizes the value of the next state
+        """
+
+        # 1. GUIDED EXTENSION: Choose the action that maximizes the next state's value
+        # The opening moves are still guided by the learned policy
+        if self.guided_extension and game.get_move_count()/2 >= self.opening_moves:
+
+            # 1.0. Get all possible actions based on the current game state
+            possible_actions = game.get_possible_actions()
+
+            # 1.1. Initialize the variables
+            max_value = float('-inf')
+            best_action = choice(possible_actions)
+
+            # 1.2. Choose the action that maximizes the next state's value
+            for from_pos, slide in possible_actions:
+
+                # 1.2.1. Get the next state's value
+                value = self._get_next_state_value(game, from_pos, slide)
+
+                # 1.2.3. Update the best action if necessary
+                if value > max_value:
+                    max_value = value
+                    best_action = (from_pos, slide)
+
+            # 1.4. Return the best action
+            return best_action
+        
+        # 2. POLICY EXPLOITATION: Choose the action based on the learned policy
+        else:
+            return self._get_action(game, training_phase=False)
+
+    def _get_next_state_value(self, game: 'Quixo', from_pos: tuple[int, int], slide: Move) -> int:
+        """
+        (GUIDED EXTENSION)
+        Heuristic function that returns the value of the next state after simulating the given action.
+        - It guides the agent to choose the action that maximizes the value of the next state 
+            when the game is not in the opening stage.
+        """
+        # 1. Make a copy of the game and perform the action
+        game_copy = deepcopy(game)
+        game_copy.make_move(from_pos, slide)
+            
+        # 2. Get the new sequences of the player and the opponent
+        x_sequences, o_sequences = game_copy.check_sequences()
+
+        # 2. Get the sequences of the minimax player and its opponent
+        rl_player_id = game_copy.get_current_player()
+        if rl_player_id == 0:
+            player_sequences = x_sequences
+            opponent_sequences = o_sequences
+        else:
+            player_sequences = o_sequences
+            opponent_sequences = x_sequences
+        
+        # 3. Get the total score
+        player_score = player_sequences[0] + player_sequences[1] * 3 + player_sequences[2] * 15 + player_sequences[3] * 300
+        opponent_score = opponent_sequences[0] + opponent_sequences[1] * 3 + opponent_sequences[2] * 15 + opponent_sequences[3] * 300
+        return player_score - opponent_score
 
     def _get_base_state(self, game: 'Quixo') -> tuple[str, str]:
         """ 
@@ -82,31 +149,11 @@ class RL_Player(Player):
         # 1. Get all possible actions based on the current game state
         possible_actions = game.get_possible_actions()
 
-        # 2. GUIDED EXPLORATION: Choose the action that maximizes the next state's reward
+        # 2. EXPLORATION: Choose a random action
         if training_phase and random() < self.epsilon:
-            
-            # 2.0. Initialize the variables
-            max_reward = float('-inf')
-            best_action = choice(possible_actions)
-            game_copy = deepcopy(game)
-
-            # 2.1. For each possible action
-            for from_pos, slide in possible_actions:
-
-                # 2.1.1. Simulate the action and get the reward
-                _, reward, _ = self._get_action_reward(game_copy, (from_pos, slide))
-
-                # 2.1.2. Add some noise to the reward to avoid depending only to the order of the actions
-                reward += random() 
-
-                # 2.1.2. If the reward is better than the current best reward => update the best action
-                if reward > max_reward:
-                    max_reward = reward
-                    best_action = (from_pos, slide)
-
-            return best_action
+            return choice(possible_actions)            
         
-        # 3. EXPLOITATION: Choose the action with the highest Q-value or the one that maximizes the next state's reward
+        # 3. EXPLOITATION: Choose the action with the highest Q-value
         else:
             
             # 3.0. Set the symmetry generator
@@ -125,8 +172,8 @@ class RL_Player(Player):
             for base_action in base_actions:
 
                 # 3.3.1. If the state-action pair is not in the Q-table
-                # => return a random Q-value between -50 and 50 to inject some variability in choosing the max
-                q_values.append(self.q_table.get((base_state, base_action), random() * 100 - 50))
+                # => return a random Q-value between 0 and 1 to inject some variability in choosing the max
+                q_values.append(self.q_table.get((base_state, base_action), random()))
 
             # 3.4. Get the action with the highest Q-value
             max_q_value = max(q_values)
@@ -140,6 +187,7 @@ class RL_Player(Player):
             # 3.6. ERROR-CHECK
             if best_action not in possible_actions:
                 print("ERROR: The best action is not in the list of possible actions")
+                raise Exception
 
             # 3.7. Return the action
             return from_pos, slide
@@ -148,10 +196,11 @@ class RL_Player(Player):
         """Returns the reward of the given action"""
 
         # 0. Initialize the variables
-        reward = 0
+        # The reward is negative to encourage the agent to win as fast as possible
+        reward = -2 
+        from_pos, slide = action
         winner = -1
         player_id = game.get_current_player()
-        from_pos, slide = action
 
         # 1. If the piece to move is neutral, get a small reward for occupying it
         if game.get_board()[from_pos[1]][from_pos[0]] == -1:
@@ -162,6 +211,7 @@ class RL_Player(Player):
         if not ok:
             return ok, 0, -1
         
+        """
         # 3. Get the sequences of X and O after the move
         x_sequences, o_sequences = game.check_sequences()
 
@@ -186,6 +236,7 @@ class RL_Player(Player):
             # Lose the game with its own move
             reward = -200
             winner = 1 - player_id
+        """
 
         return ok, reward, winner
     
@@ -216,8 +267,8 @@ class RL_Player(Player):
 
 class MonteCarloPlayer(RL_Player):
     
-    def __init__(self, epsilon=1, alpha=0.2, gamma=0.95, e_decay=0.99999, e_min=0.2) -> None:
-        super().__init__(epsilon, alpha, gamma, e_decay, e_min)
+    def __init__(self, epsilon=1, alpha=0.2, gamma=0.9, e_decay=0.99999, e_min=0.2, guided_extension=False, opening_moves=5) -> None:
+        super().__init__(epsilon, alpha, gamma, e_decay, e_min, guided_extension, opening_moves)
 
     def _update_q_table(self, trajectory):
         """Update the Q-table based on the trajectory of the episode"""
@@ -306,7 +357,7 @@ class MonteCarloPlayer(RL_Player):
                             reward_counter += reward
 
                             # Store the base state-action-reward in the trajectory
-                            trajectory.append((base_state, base_action, 0))
+                            trajectory.append((base_state, base_action, reward))
 
                     else: # Random player
 
@@ -319,12 +370,12 @@ class MonteCarloPlayer(RL_Player):
                 # 2.3.2. Check if there is a winner
                 if winner >= 0: 
                     
-                    # 2.3.2.1. Win due to Monte Carlo player's last move
+                    # 2.3.2.1. Win due to Monte Carlo player's last move (ONLY IN THE VERSION OF GET REWARD ACTION W/ HEURISTIC)
                     # => update the last state-action pair in the trajectory with the total episode reward
                     trajectory[-1] = (trajectory[-1][0], trajectory[-1][1], reward_counter)
                 else:
 
-                    # 2.3.2.2. Possible win due to Random player's last move
+                    # 2.3.2.2. Possible win due to Random player's last move (OR BOTH IF NOT VERSION OF GET REWARD ACTION W/ HEURISTIC)
                     winner = game.check_winner()
                     if winner >= 0:
                         
@@ -333,7 +384,7 @@ class MonteCarloPlayer(RL_Player):
                         reward_counter += end_reward
 
                         # Update the last state-action pair in the trajectory with the final reward
-                        trajectory[-1] = (trajectory[-1][0], trajectory[-1][1], reward_counter)                        
+                        trajectory[-1] = (trajectory[-1][0], trajectory[-1][1], end_reward)                        
 
             # ..EPISODE ENDS..............................................
                         

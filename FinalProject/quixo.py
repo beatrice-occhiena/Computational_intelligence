@@ -11,6 +11,7 @@ from symmetry import SymmetryGenerator
 class Quixo(Game):
     def __init__(self) -> None:
         super().__init__()
+        self.moves_count = 0
     
     def print(self, winner: int=-1):
         """
@@ -94,8 +95,13 @@ class Quixo(Game):
         # 3. Return the list of possible actions
         return possible_actions
     
+    def get_move_count(self) -> int:
+        """Returns the number of moves made so far."""
+        return self.moves_count
+    
     def make_move(self, from_pos: tuple[int, int], slide: Move) -> bool:
         """Makes a move on the board."""
+        self.moves_count += 1
         return super()._Game__move(from_pos, slide, self.current_player_idx)
     
     def check_sequences(self) -> tuple[list[int], list[int]]:

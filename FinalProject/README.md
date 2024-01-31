@@ -114,16 +114,16 @@ In light of the above, both MiniMax and Reinforcement Learning (RL) agents seeme
 
 #### 🔸 MiniMax Agent
 MiniMax is a classic algorithm for making decisions in adversarial games like Quixo. It explores the game tree by recursively evaluating possible moves up to a certain depth, maximizing its chances of winning while minimizing the opponent's. 
-- **Deterministic Nature**: Quixo is a deterministic, turn-based game with perfect information. The deterministic nature allows us to easily explore sections of the game-state tree.
-- **Branching Factor**: The relatively low branching factor (maximum 44 moves per turn) of the game tree makes MiniMax particularly effective in Quixo.
-- **Sound Strategy**: MiniMax could potentially guarantee a very good strategy by exploring the tree in depth.
-- **Player Symmetry**: The symmetric nature of the game, where players share winning strategies, aligns well with MiniMax's approach, simplifying the decision-making process.
+- `Deterministic Nature`: Quixo is a deterministic, turn-based game with perfect information. The deterministic nature allows us to easily explore sections of the game-state tree.
+- `Branching Factor`: The relatively low branching factor (maximum 44 moves per turn) of the game tree makes MiniMax particularly effective in Quixo.
+- `Sound Strategy`: MiniMax could potentially guarantee a very good strategy by exploring the tree in depth.
+- `Player Symmetry`: The symmetric nature of the game, where players share winning strategies, aligns well with MiniMax's approach, simplifying the decision-making process.
 
 #### 🔹 Reinforcement Learning Agent
 Reinforcement Learning is a powerful paradigm for learning optimal strategies through trial and error. RL agents, such as those based on Monte Carlo algorithm, can adapt and improve their performance over time by interacting with the environment and receiving feedback in the form of rewards. 
-- **State-Space Complexity**: Despite the large state space, the symmetric properties of Quixo can help mitigate the complexity, making RL a viable option. 
-- **Player Equivalence**: The equivalence of strategies between players makes RL particularly suitable, as the agent can learn a comprehensive policy without differentiating between the two players.
-- **Adaptability**: RL agents have the potential to discover nuanced strategies that might not be immediately apparent to human players.
+- `State-Space Complexity`: Despite the large state space, the symmetric properties of Quixo can help mitigate the complexity, making RL a viable option. 
+- `Player Equivalence`: The equivalence of strategies between players makes RL particularly suitable, as the agent can learn a comprehensive policy without differentiating between the two players.
+- `Adaptability`: RL agents have the potential to discover nuanced strategies that might not be immediately apparent to human players.
 
 By combining the strengths of both MiniMax and RL agents, we aim to create a versatile AI system capable of optimal decision-making in Quixo, leveraging the deterministic nature and strategic symmetry of the game.
 
@@ -131,20 +131,52 @@ By combining the strengths of both MiniMax and RL agents, we aim to create a ver
 ## Implementation
 
 ### Quixo Extended Class
-We've created 
 
-### Symmetry Management
+The `Quixo` class serves as a wrapper for the provided `Game` class, offering additional functionalities and modifications to best suit the implementation of our AI agents.
+
+#### Initialization
+- We've added the `moves_count` attribute to keep track of the number of moves made during the game.
+- This new feature is useful to determine if the game is in a opening, mid-game, or end-game state, and can be used to adjust the strategy of the AI agent accordingly.
+
+#### Move Count
+- The `get_move_count` method returns the number of moves made so far.
+
+#### Printing
+- The `print` method prints the current board state along with the players' pieces in a user-friendly format, indicating neutral pieces as ⬜, pieces of player 0 as ❌, and pieces of player 1 as 🔘.
+- If a winner is determined, it displays the winning player. Otherwise, it shows the current player.
+
+#### Possible Actions
+- The `get_possible_actions` method returns a list of possible actions, consisting of tuples containing the position of the piece to move and the direction in which to move it.
+- An action is considered possible if the piece is neutral or belongs to the current player and if the piece is on the edge of the board.
+- This method is very useful to get a faster and more efficient evaluation of the game tree.
+
+#### Making Moves
+- The `make_move` method updates the board by making a move from the specified position in the given direction.
+- It also increments the `moves_count` counter.
+
+#### Sequence Checking
+> 🔆 This is one of the most important methods in the class, as it is used by all the AI agents as starting point for the heuristic evaluation of the board state.
+- The `check_sequences` method checks for the number of adjacent 2, 3, 4, and 5 pieces for each player, along with the number of 4 pieces in a line, even if they are not adjacent.
+- It returns the counts of sequences for both players.
+
+#### Checking for a Winner
+- The `check_winner` method checks if there is a winner based on the current board state.
+
+#### Changing Players
+- The `change_player` method switches the current player.
+
+#### Playing a Game
+- The `play` method initiates a game between two players, taking them as arguments and providing an option for verbosity and debugging. 
+- It mantains the same structure as the `play` method in the `Game` class, but it uses our `print` method to give a more user-friendly output.
+
+### Reinforcement Learning
+
+#### ♊ Symmetry Management
 As mentioned in the previous section, the board has 8 symmetries. This means that, given a state, we can generate up to 8 equivalent states.
 
 In the file [`symmetry.py`](symmetry.py) we've implemented ...
 
-
-#TODO
-- Switch 0s and 1s in the board before searching in the Q-table WHEN RL_player moves second
-- Approximating Q function with a Neural Network???
-
-
-# MiniMax
+### MiniMax
 
 The minimax algorithm is a decision-making algorithm used in two-player turn-based games. It is particularly popular in board games like chess, tic-tac-toe, and Quixo. The goal of the minimax algorithm is to find the optimal move for a player, assuming that the opponent also plays optimally. The algorithm explores the game tree, representing all possible moves and counter-moves, and assigns a value to each node in the tree.
 
@@ -172,7 +204,5 @@ Final Decision:
 
 After exploring the entire tree or reaching a specified depth, the algorithm makes the final decision based on the root node's children.
 In summary, the minimax algorithm provides a systematic way to explore the entire game tree, considering all possible moves and counter-moves. The use of alpha-beta pruning helps reduce the number of nodes that need to be evaluated, making the algorithm more efficient.
-
-
 
 
