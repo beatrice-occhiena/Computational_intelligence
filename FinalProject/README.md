@@ -42,13 +42,16 @@
     - [Checking for a Winner](#checking-for-a-winner)
     - [Changing Players](#changing-players)
     - [Playing a Game](#playing-a-game)
-  - [MiniMax Agent](#minimax-agent-1)
+  - [MiniMax Agent](#minimax-agent)
     - [Game Tree Representation](#game-tree-representation)
     - [Recursive Evaluation](#recursive-evaluation)
     - [Maximizing and Minimizing Players](#maximizing-and-minimizing-players)
     - [Alpha-Beta Pruning Optimization](#alpha-beta-pruning-optimization)
   - [Reinforcement Learning Agent](#reinforcement-learning-agent-1)
     - [Symmetry Management](#symmetry-management)
+    - [Rewarding System](#rewarding-system)
+    - [Guided Extension](#guided-extension)
+- [Results](#results)
 
 
 ## Introduction
@@ -223,7 +226,6 @@ For terminal nodes (leaves of the tree), the algorithm uses our `evaluate` funct
 - It returns a positive value if the current player has more combinations than the opponent.
 - It returns the maximum/minumum possible value if the current player has won/lost the game.
 
-
 #### 🔃 Maximizing and Minimizing Players
 
 - For nodes representing the current player's turn (*maximizing player*), the algorithm selects the child node with the maximum value.
@@ -237,9 +239,54 @@ To improve efficiency, our algorithm uses alpha-beta pruning, which eliminates b
 
 ### Reinforcement Learning Agent
 
+Reinforcement Learning is a machine learning paradigm that allows an agent to learn an optimal policy by interacting with the environment and receiving rewards. We decided to use the **Monte Carlo** algorithm, which is a model-free RL algorithm that learns directly from episodes of experience without any prior knowledge of the environment's dynamics.
+- It is based on the idea of averaging sample returns for each state-action pair to estimate the expected return for that state-action pair.
+- The algorithm learns by playing games against a Random Player and updating the Q-table based on the rewards received.
+- It stores the episode information in a trajectory, which is a list of tuples containing the state, the action, and the reward received.
+
+The file [`reinforcement_learning.py`](reinforcement_learning.py) contains the implementation of our RL agent.
+
 #### ♊ Symmetry Management
-As mentioned in the previous section, the board has 8 symmetries. This means that, given a state, we can generate up to 8 equivalent states.
+As mentioned in the preliminar analysis section, the board has 8 symmetries. This means that, given a state, we can generate up to 8 equivalent states. We can use this to our advantage by reducing the number of states we need to explore.
 
-In the file [`symmetry.py`](symmetry.py) we've implemented ...
+The file [`symmetry.py`](symmetry.py) contains the implementation of our symmetry management class.
 
+##### Trastrormations
+The class handles the 8 transformations for different elements of the game in these 3 main code blocks. Each method is associated with a specific label that indicates the type of transformation.
+1. `self.board_transforms` - A collection of methods that transform the board.
+2. `self.coor_transforms` - A collection of methods that transform the coordinates of the action to be performed.
+3. `self.slide_transforms` - A collection of methods that transform the direction of action to be performed.
 
+##### Base State and Action
+The `base state` is the state with the *lowest lexicographical order* among all the equivalent symmetries of the board. The `base action` is the action that is performed on the base state.
+- When updating the Q-table, we always use the base state and the base action.
+- When we want to exploit the learned policy, we need to apply the inverse transformation to the base action to get the actual action to be performed on the board.
+
+##### Q-Table Base State
+
+The function `_get_base_state`, belonging to the RL agent class, is finally used to get the base state of the board to be used for updating the Q-table.
+- It transforms the board to the viewpoint of player X.
+- It get the base state of the board.
+- It retrieves the label of the transformation applied to the board.
+
+#### 🪙 Rewarding System
+
+During the development, we've tried different rewarding systems to see which one would work best for our agent. 
+
+- Since the number of possible states is very large, we initially thought that the agent would have been guided by the rewards to learn the optimal policy. Therefore, we tried to integrate a reward for each action based on a similar heuristic to the one used in the MiniMax agent. We tried multiple variants of this system, however we noticed that the agent was **too biased** by the rewards and it was not able to learn a good policy. 
+- Finally, we decided to base the rewards mainly on the final outcome of the game, keeping for each action a small negative reward to discourage the agent from taking too long to win.
+  - `_get_action_reward` - Returns -1 for an action that moves a neutral piece and -2 for an action that moves a player's piece.
+  - `_get_end_reward` - Returns 100 if the agent wins, -100 if the agent loses.
+
+#### 🗺️ Guided Extension
+
+Even though we tried our best to minimize the number of states to explore, the state space is still too large to be explored in a reasonable amount of time. After 500000 episodes, the agent was still not able to learn a good policy.
+- **Q_table size**: 9_885_394
+- **Average win rate**: 0.59
+
+The objective of the guided extension is to modify the agent's decision-making process during gameplay.Initially, the agent follows its learned policy for opening moves. However, once the game progresses beyond a certain number of opening moves, the agent transitions to a strategy that selects actions maximizing the value of the next state, aiming to guide the agent towards more favorable positions as the game progresses. 
+- This transition is facilitated by the `_get_next_state_value` function, which provides a heuristic evaluation of the value of the next state after simulating a given action, encouraging the agent to choose actions that lead to states with higher values.
+
+## Results
+
+To explore the performance of our AI agents, we invite you to check out our [Quixo Jupyter Notebook](quixo.ipynb), where we've included a detailed analysis of the results and a comparison between the two agents.
