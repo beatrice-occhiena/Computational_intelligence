@@ -1,4 +1,30 @@
 
+# Log
+I declare that I have completed the following activities on time:
+
+- **CONTRIBUTIONS**
+  - Search Problem Classes
+  - GA visualization tool
+- **EXTRAS**
+  - Halloween Challenge
+- **LABS**
+  - Lab_01
+  - Lab_02
+  - Lab_09
+  - Lab_10
+- **REVIEWS**
+  - Lab_01 not required
+  - Lab_02
+  - Lab_09
+  - Lab_10
+- **FINAL PROJECT**
+  - Quixo extended class
+  - Minimax agent
+  - Monte Carlo agent
+  - Symmetry class
+  - Preliminar Analysis
+  - Results and Discussion
+
 # Review Received
 
 ## Lab2 Review by Alessandro Chiabodo S309234
