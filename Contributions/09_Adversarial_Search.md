@@ -97,7 +97,7 @@ Therefore, the algorithm is based on the following assumptions:
 
 - **Stock market**: you can maximize your chances of winning by investing in high-risk stocks, but you can also lose a lot of money. 
 
-- Minimax is about minimizing the maximum possible loss, so it is a more conservative approach. To minimize the maximum possible loss in the stock market, you would not invest at all! And that is not a good strategy.
+  Minimax is about minimizing the maximum possible loss, so it is a more conservative approach. To minimize the maximum possible loss in the stock market, you would not invest at all! And that is not a good strategy.
 
 ### Algorithm
 In the minimax algorithm, we explore the game tree using a **depth-first search**. We evaluate the nodes at the bottom of the tree using a `heuristic function`.
