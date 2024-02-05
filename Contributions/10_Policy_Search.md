@@ -5,7 +5,7 @@
 
 **Resources:** These notes are the result of additional research and analysis of the lecture material presented by Professor Giovanni Squillero for the Computational Intelligence course during the academic year 2023-2024 @ Politecnico di Torino. They are intended to be my attempt to make a personal contribution and to rework the topics covered in the following resources.
 - [https://github.com/squillero/computational-intelligence](https://github.com/squillero/computational-intelligence)
-- Lessons: 30/11/2023, 04/12/2023, 05/12/2023
+- Lessons: 30/11/2023, 04/12/2023, 05/12/2023, 11/12/2023
 - Stuart Russel, Peter Norvig, *Artificial Intelligence: A Modern Approach* [3th edition]
 - Richard S. Sutton, Andrew G. Barto, *Reinforcement Learning: An Introduction* [2nd Edition]
 - Useful site to better understand Monte Carlo method [analyticsvidhya.com](https://www.analyticsvidhya.com/blog/2018/11/reinforcement-learning-introduction-monte-carlo-learning-openai-gym/)
@@ -22,6 +22,8 @@
   - [Implementation](#implementation)
   - [Rule Evaluation](#rule-evaluation)
 - [Reinforcement Learning](#reinforcement-learning)
+  - [Key concepts](#key-concepts)
+  - [Caveats](#caveats)
 
 ## Introduction
 > 🎯 The objective is to directly learn an optimal `black box policy function` that maps **each state** to the **best action** to perform in that state.
@@ -118,3 +120,5 @@ Reinforcement Learning (RL) is a type of machine learning that allows an agent t
 - **Dense vs Sparse Rewards**: the agent may receive rewards at every step or only at the end of the episode.
 - **Credit Assignment Problem**: the agent must understand precisely which actions led to the reward.
 - **Sample Efficiency**: the minimum number of samples required to learn a good policy.
+
+44:17 11/12/2023
