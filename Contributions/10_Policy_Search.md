@@ -5,7 +5,7 @@
 
 **Resources:** These notes are the result of additional research and analysis of the lecture material presented by Professor Giovanni Squillero for the Computational Intelligence course during the academic year 2023-2024 @ Politecnico di Torino. They are intended to be my attempt to make a personal contribution and to rework the topics covered in the following resources.
 - [https://github.com/squillero/computational-intelligence](https://github.com/squillero/computational-intelligence)
-- Lessons: 30/11/2023, 04/12/2023, 05/12/2023, 11/12/2023, 12/12/2023, 14/12/2023
+- Lessons: 30/11/2023, 04/12/2023, 05/12/2023, 11/12/2023, 12/12/2023, 14/12/2023, 18/12/2023
 - Stuart Russel, Peter Norvig, *Artificial Intelligence: A Modern Approach* [3th edition]
 - Richard S. Sutton, Andrew G. Barto, *Reinforcement Learning: An Introduction* [2nd Edition]
 - Useful site to better understand Monte Carlo method [analyticsvidhya.com](https://www.analyticsvidhya.com/blog/2018/11/reinforcement-learning-introduction-monte-carlo-learning-openai-gym/)
@@ -27,6 +27,13 @@
     - [Task types](#task-types)
     - [Policy and Expected Return](#policy-and-expected-return)
   - [Caveats](#caveats)
+  - [Model-based vs Model-free](#model-based-vs-model-free)
+  - [Markov Decision Process](#markov-decision-process)
+  - [Q-Learning](#q-learning)
+    - [Model-based Q-Learning](#model-based-q-learning)
+    - [Model-free Q-Learning](#model-free-q-learning)
+  - [Monte Carlo Methods](#monte-carlo-methods)
+  - [Final Considerations](#final-considerations)
 
 ## Introduction
 > 🎯 The objective is to directly learn an optimal `black box policy function` that maps **each state** to the **best action** to perform in that state.
@@ -155,8 +162,6 @@ Reinforcement Learning (RL) is a type of machine learning that allows an agent t
   - The model is used to predict the next state and the reward given the current state and action.
 - **Model-free**: the agent learns a policy without learning a model of the environment. The agent learns to map states to actions directly `exclusively from trial and error`.
 
-## a. Model-based RL
-
 ### Markov Decision Process
 A Markov Decision Process (MDP) is a mathematical framework for modeling decision-making in fully-observable environment where outcomes are:
 1. partly random (e.g. dice roll, stock prices, etc.)
@@ -168,15 +173,22 @@ A Markov Decision Process (MDP) is a mathematical framework for modeling decisio
 
 $p(s', r | s, a) = P[S_{t+1} = s', R_{t+1} = r | S_t = s, A_t = a]$
 
-### Model-based Q-Learning
+### Q-Learning
 
+> 💡 Somewhat **similar to John Holland's LCS**, that now can be seen as a compact way to approximate the Q-table (even if incredibly slow).
+- LCS -> understandable list of rules
+- Q-Learning -> a table of state-action values
 
-## b. Model-free RL
+> ❓ Are we actually `LEARNING` anything? **NOT REALLY!**
+- We are just memorizing a long list of state-action pairs and their `values in a table`.
+- Caveat: With Q-Learning, the "learned" policy is **not directly transferable** to other problems, even very similar ones.
 
-### Model-free Q-Learning
+#### Model-based Q-Learning
+
+#### Model-free Q-Learning
 
 ### Monte Carlo Methods
-- sample 
+
 
 ### Final Considerations
 Reinforcement learning is an intresting idea, but it is almost only applied to game settings. It is not very efficient in terms of:
