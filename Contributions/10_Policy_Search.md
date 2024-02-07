@@ -30,11 +30,11 @@
   - [Model-based vs Model-free](#model-based-vs-model-free)
   - [Markov Decision Process](#markov-decision-process)
   - [Q-Learning](#q-learning)
-    - [Model-based Q-Learning](#model-based-q-learning)
-    - [Model-free Q-Learning](#model-free-q-learning)
+    - [Considerations](#considerations)
   - [Monte Carlo Methods](#monte-carlo-methods)
+  - [Q-L vs MC](#q-l-vs-mc)
   - [Final Considerations](#final-considerations)
-
+  
 ## Introduction
 > 🎯 The objective is to directly learn an optimal `black box policy function` that maps **each state** to the **best action** to perform in that state.
 - In some simple cases, similar to a **dictionary**: for each word (state) there is a definition (action). $\pi(s) = a$
@@ -174,6 +174,23 @@ A Markov Decision Process (MDP) is a mathematical framework for modeling decisio
 $p(s', r | s, a) = P[S_{t+1} = s', R_{t+1} = r | S_t = s, A_t = a]$
 
 ### Q-Learning
+Q-Learning is a RL algorithm that learns to make decisions by learning the quality of actions in a given state. It is a **temporal difference learning** algorithm, that learns by comparing the current estimate of the quality of an action with the estimate of the quality of the action in the next state.
+- Model-free: it does not require a model of the environment.
+- Model-based: it learns a model of the environment.
+
+The update of the Q-table is performed after each action, using the following formula:
+
+$Q^*_{t+1}(s, a) = (1-\alpha)Q^*_{t}(s, a) + \alpha [R_{t+1} + \gamma Q^*_{t}(s', a')]$
+
+where:
+- $Q^*_{t}(s, a)$ is the quality of the action $a$ in the state $s$ at time $t$
+- $\alpha$ is the learning rate
+- $\gamma$ is the discount factor
+- $R_{t+1}$ is the reward received after performing action $a$ in state $s$
+- $s'$ is the next state
+- $a'$ is the action that maximizes the quality in the next state
+
+#### Considerations
 
 > 💡 Somewhat **similar to John Holland's LCS**, that now can be seen as a compact way to approximate the Q-table (even if incredibly slow).
 - LCS -> understandable list of rules
@@ -183,11 +200,22 @@ $p(s', r | s, a) = P[S_{t+1} = s', R_{t+1} = r | S_t = s, A_t = a]$
 - We are just memorizing a long list of state-action pairs and their `values in a table`.
 - Caveat: With Q-Learning, the "learned" policy is **not directly transferable** to other problems, even very similar ones.
 
-#### Model-based Q-Learning
-
-#### Model-free Q-Learning
-
 ### Monte Carlo Methods
+Monte Carlo methods are a class of computational algorithms that rely on `repeated random sampling` to obtain numerical results. In the context of RL, Monte Carlo methods are used to estimate the value of a state-action pair by **averaging the returns** that are observed after visiting that state-action pair.
+
+The update of the Q-table is performed after each episode, using the following formula:
+
+$Q^*_{t}(s, a) = Q^*_{t-1}(s, a) + \alpha [G_t - Q^*_{t-1}(s, a)]$
+
+where:
+- $G_t$ is the return obtained after visiting the state-action pair $s, a$
+- $\alpha$ is the learning rate
+
+### Q-L vs MC
+- **Learning Speed**: Q-Learning learns faster than Monte Carlo methods due to updating estimates based on maximum future reward, while Monte Carlo waits until the episode's end.
+- **Bias and Variance**: Q-Learning has bias as it assumes current Q-values are correct, while Monte Carlo methods have no bias but high variance due to diverse returns.
+- **Memory Requirement**: Q-Learning needs less memory than Monte Carlo as it stores only current state and action, while Monte Carlo stores all states and actions in an episode.
+- **Policy Requirement**: Q-Learning is off-policy, learning optimal policy regardless of agent's current policy; Monte Carlo is on-policy, learning only the current policy.
 
 
 ### Final Considerations
